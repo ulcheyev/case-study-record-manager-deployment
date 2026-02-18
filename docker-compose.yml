@@ -158,9 +158,12 @@ services:
     depends_on:
       - migrations
       - postgres
+      - keycloak-config
     restart: on-failure
     volumes:
       - ./configs/mediacms/local_settings.py:/home/mediacms.io/mediacms/deploy/docker/local_settings.py
+      - ./configs/mediacms/oidc_adapter.py:/home/mediacms.io/mediacms/deploy/docker/oidc_adapter.py
+      - keycloak-secrets:/secrets
 
   celery_beat:
     image: mediacms/mediacms:latest
@@ -273,10 +276,13 @@ services:
       TF_VAR_kc_realm: "${KC_REALM:-record-manager}"
       TF_VAR_kc_url: "http://auth-server:8080/"
       TF_VAR_kc_access_token_lifespan: "${KC_ACCESS_TOKEN_LIFESPAN:-5m}"
+      TF_VAR_mediacms_base_url: "${PUBLIC_ORIGIN:-http://localhost}:${MEDIA_CMS_HOST_PORT:-2080}"
     volumes:
       - ./configs/keycloak-config:/workspace
+      - keycloak-secrets:/secrets
 
 volumes:
   db-server:
   auth-server:
   postgres:
+  keycloak-secrets:

@@ -58,6 +58,9 @@ EOT
     read-statistics-role = <<EOT
 Allows users to view statistical reports about the system’s data.
 EOT
+    mediacms-access-role = <<EOT
+Allows users to access MediaCMS.
+EOT
   }
 }
 

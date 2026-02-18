@@ -10,3 +10,4 @@ This deployment is based on [Keycloak based Record Manager Deployment](https://g
 3. if changed origin for example for dev -> also change in keycloak, add origin in realm!
 4. setup passwords and users in env
 4. docker compose build
+5. to use media cms or annotator it is need to assign role  
