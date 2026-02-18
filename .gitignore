@@ -1,0 +1,11 @@
+# Editors
+.idea
+
+# Local configuration/deployment files
+*.iml
+.env
+docker-compose.local.yml
+
+
+# Mac
+.DS_Store
