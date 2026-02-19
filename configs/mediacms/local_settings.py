@@ -67,7 +67,6 @@ def read_secret(
 
 OIDC_SECRET = read_secret()
 
-
 SOCIALACCOUNT_PROVIDERS = {
     "openid_connect": {
         "APPS": [
@@ -93,11 +92,11 @@ LOGIN_URL = "/accounts/oidc/keycloak/login/"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/accounts/oidc/keycloak/login/"
 
-#SOCIALACCOUNT_ADAPTER = "deploy.docker.oidc_adapter.RoleRestrictedSocialAccountAdapter"
-#MEDIACMS_REQUIRED_ROLE = os.getenv(
-#     "MEDIACMS_REQUIRED_ROLE",
-#     "mediacms-access-role"
-# )
+SOCIALACCOUNT_ADAPTER = "deploy.docker.oidc_adapter.RoleRestrictedSocialAccountAdapter"
+MEDIACMS_REQUIRED_ROLE = os.getenv(
+    "MEDIACMS_REQUIRED_ROLE",
+    "mediacms-access-role"
+)
 
 # CELERY STUFF
 BROKER_URL = REDIS_LOCATION

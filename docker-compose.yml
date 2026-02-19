@@ -1,4 +1,5 @@
 services:
+
   nginx:
     image: nginx:latest
     container_name: ${RECORD_SET_NAME:-rm}-nginx
@@ -163,6 +164,7 @@ services:
     volumes:
       - ./configs/mediacms/local_settings.py:/home/mediacms.io/mediacms/deploy/docker/local_settings.py
       - ./configs/mediacms/oidc_adapter.py:/home/mediacms.io/mediacms/deploy/docker/oidc_adapter.py
+      - ./configs/mediacms/nginx.conf:/home/mediacms.io/mediacms/deploy/docker/nginx_http_only.conf
       - keycloak-secrets:/secrets
 
   celery_beat:
