@@ -29,30 +29,30 @@ services:
       - ./configs/nginx/images:/usr/share/nginx/html/images:ro
       - ./configs/nginx/statistics.html:/usr/share/nginx/html/statistics.html:ro
 
-#  oauth2-proxy:
-#    build:
-#      context: ./configs/oauth2-proxy
-#    container_name: ${RECORD_SET_NAME:-rm}-oauth2-proxy
-#    restart: always
-#    depends_on:
-#      - keycloak-config
-#    expose:
-#      - "4180"
-#    volumes:
-#      - keycloak-secrets:/secrets
-#    environment:
-#      OAUTH2_PROXY_PROVIDER: oidc
-#      OAUTH2_PROXY_CLIENT_ID: media-asset-annotator
-#      OAUTH2_PROXY_OIDC_ISSUER_URL: http://auth-server:8080/realms/record-manager
-#      OAUTH2_PROXY_COOKIE_SECRET_FILE: "/secrets/oauth2_cookie_secret"
-#      OAUTH2_PROXY_CLIENT_SECRET_FILE: "/secrets/annotator_client_secret"
-#      OAUTH2_PROXY_EMAIL_DOMAINS: "*"
-#      OAUTH2_PROXY_ALLOWED_ROLES: "annotator-access-role"
-#      OAUTH2_PROXY_OIDC_GROUPS_CLAIM: "realm_access.roles"
-#      OAUTH2_PROXY_SCOPE: "openid profile email"
-#      OAUTH2_PROXY_HTTP_ADDRESS: "0.0.0.0:4180"
-#      OAUTH2_PROXY_REVERSE_PROXY: "true"
-#      OAUTH2_PROXY_SET_XAUTHREQUEST: "true"
+  oauth2-proxy:
+    build:
+      context: ./configs/oauth2-proxy
+    container_name: ${RECORD_SET_NAME:-rm}-oauth2-proxy
+    restart: always
+    depends_on:
+      - keycloak-config
+    expose:
+      - "4180"
+    volumes:
+      - keycloak-secrets:/secrets
+    environment:
+      OAUTH2_PROXY_PROVIDER: oidc
+      OAUTH2_PROXY_CLIENT_ID: media-asset-annotator
+      OAUTH2_PROXY_OIDC_ISSUER_URL: http://auth-server:8080/realms/record-manager
+      OAUTH2_PROXY_COOKIE_SECRET_FILE: "/secrets/oauth2_cookie_secret"
+      OAUTH2_PROXY_CLIENT_SECRET_FILE: "/secrets/annotator_client_secret"
+      OAUTH2_PROXY_EMAIL_DOMAINS: "*"
+      OAUTH2_PROXY_ALLOWED_ROLES: "annotator-access-role"
+      OAUTH2_PROXY_OIDC_GROUPS_CLAIM: "realm_access.roles"
+      OAUTH2_PROXY_SCOPE: "openid profile email"
+      OAUTH2_PROXY_HTTP_ADDRESS: "0.0.0.0:4180"
+      OAUTH2_PROXY_REVERSE_PROXY: "true"
+      OAUTH2_PROXY_SET_XAUTHREQUEST: "true"
 
   record-manager:
     image: ghcr.io/kbss-cvut/record-manager-ui:latest
@@ -194,7 +194,7 @@ services:
       - keycloak-secrets:/secrets
 
   celery_beat:
-    image: mediacms/mediacms:latest
+    image: mediacms/mediacms:7.2
     container_name: ${RECORD_SET_NAME:-rm}-media-cms-beat
     environment:
       ENABLE_UWSGI: no

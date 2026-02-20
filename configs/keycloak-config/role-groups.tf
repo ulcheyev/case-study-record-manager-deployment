@@ -22,7 +22,8 @@ variable "role_groups" {
       "write-all-organizations-role",
       "read-action-history-role",
       "read-statistics-role",
-      "mediacms-access-role"
+      "mediacms-access-role",
+      "annotator-access-role"
     ]
     data-collection-coordinator-role-group = [
       "read-all-users-role",
@@ -37,7 +38,8 @@ variable "role_groups" {
       "write-organization-records-role",
       "comment-record-questions-role",
       "complete-records-role",
-      "mediacms-access-role"
+      "mediacms-access-role",
+      "annotator-access-role"
     ]
     organization-manager-role-group = [
       "read-organization-role",
@@ -47,7 +49,6 @@ variable "role_groups" {
       "read-organization-records-role",
       "write-organization-records-role",
       "comment-record-questions-role",
-      "mediacms-access-role"
     ]
     entry-clerk-role-group = [
       "read-organization-role",
