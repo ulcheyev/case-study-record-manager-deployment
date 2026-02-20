@@ -61,6 +61,9 @@ EOT
     mediacms-access-role = <<EOT
 Allows users to access MediaCMS.
 EOT
+    annotator-access-role = <<EOT
+    Allows users to access the media asset annotator.
+EOT
   }
 }
 

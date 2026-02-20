@@ -2,7 +2,7 @@ services:
 
   nginx:
     image: nginx:latest
-    container_name: ${RECORD_SET_NAME:-rm}-nginx
+    container_name: ${RECORD_SET_NAME:-rm}-gateway
     ports:
       - "127.0.0.1:${INTERNAL_HOST_PORT:-1235}:80"
     restart: always
@@ -28,6 +28,31 @@ services:
       - ./configs/nginx/index.html:/usr/share/nginx/html/index.html:ro
       - ./configs/nginx/images:/usr/share/nginx/html/images:ro
       - ./configs/nginx/statistics.html:/usr/share/nginx/html/statistics.html:ro
+
+#  oauth2-proxy:
+#    build:
+#      context: ./configs/oauth2-proxy
+#    container_name: ${RECORD_SET_NAME:-rm}-oauth2-proxy
+#    restart: always
+#    depends_on:
+#      - keycloak-config
+#    expose:
+#      - "4180"
+#    volumes:
+#      - keycloak-secrets:/secrets
+#    environment:
+#      OAUTH2_PROXY_PROVIDER: oidc
+#      OAUTH2_PROXY_CLIENT_ID: media-asset-annotator
+#      OAUTH2_PROXY_OIDC_ISSUER_URL: http://auth-server:8080/realms/record-manager
+#      OAUTH2_PROXY_COOKIE_SECRET_FILE: "/secrets/oauth2_cookie_secret"
+#      OAUTH2_PROXY_CLIENT_SECRET_FILE: "/secrets/annotator_client_secret"
+#      OAUTH2_PROXY_EMAIL_DOMAINS: "*"
+#      OAUTH2_PROXY_ALLOWED_ROLES: "annotator-access-role"
+#      OAUTH2_PROXY_OIDC_GROUPS_CLAIM: "realm_access.roles"
+#      OAUTH2_PROXY_SCOPE: "openid profile email"
+#      OAUTH2_PROXY_HTTP_ADDRESS: "0.0.0.0:4180"
+#      OAUTH2_PROXY_REVERSE_PROXY: "true"
+#      OAUTH2_PROXY_SET_XAUTHREQUEST: "true"
 
   record-manager:
     image: ghcr.io/kbss-cvut/record-manager-ui:latest
@@ -114,7 +139,7 @@ services:
       CORS_ALLOWED_ORIGINS: "${PUBLIC_ORIGIN:-http://media-asset-annotator,http://localhost:${INTERNAL_HOST_PORT:-1235}}"
 
   migrations:
-    image: mediacms/mediacms:latest
+    image: mediacms/mediacms:7.2
     container_name: ${RECORD_SET_NAME:-rm}-media-cms-migration
     environment:
       ENABLE_UWSGI: no
@@ -136,7 +161,7 @@ services:
     restart: on-failure
 
   mediacms:
-    image: mediacms/mediacms:latest
+    image: mediacms/mediacms:7.2
     ports:
       - '${MEDIA_CMS_HOST_PORT-2080}:80'
     container_name: ${RECORD_SET_NAME:-rm}-media-cms-web
@@ -165,6 +190,7 @@ services:
       - ./configs/mediacms/local_settings.py:/home/mediacms.io/mediacms/deploy/docker/local_settings.py
       - ./configs/mediacms/oidc_adapter.py:/home/mediacms.io/mediacms/deploy/docker/oidc_adapter.py
       - ./configs/mediacms/nginx.conf:/home/mediacms.io/mediacms/deploy/docker/nginx_http_only.conf
+      - ./configs/mediacms/images/userlogos:/home/mediacms.io/mediacms/media_files/userlogos
       - keycloak-secrets:/secrets
 
   celery_beat:
@@ -181,7 +207,7 @@ services:
     restart: on-failure
 
   celery_worker:
-    image: mediacms/mediacms:latest
+    image: mediacms/mediacms:7.2
     container_name: ${RECORD_SET_NAME:-rm}-media-cms-worker
     deploy:
       replicas: 1
@@ -207,8 +233,8 @@ services:
       context: ./configs/db-server
     image: ${RECORD_SET_NAME:-rm}-db-server
     container_name: ${RECORD_SET_NAME:-rm}-db-server
-    ports:
-      - "7200:7200"
+    expose:
+      - "7200"
     restart: always
     environment:
       GDB_JAVA_OPTS: "-Dgraphdb.external-url=${PUBLIC_ORIGIN:-http://localhost:${INTERNAL_HOST_PORT:-1235}}${APP_ROOT_PATH:-}/services/db-server"
@@ -231,6 +257,7 @@ services:
     container_name: ${RECORD_SET_NAME:-rm}-auth-server
     command:
       - start --import-realm --features="token-exchange,admin-fine-grained-authz"
+    restart: on-failure:5
     expose:
       - "8080"
     depends_on:
@@ -279,6 +306,7 @@ services:
       TF_VAR_kc_url: "http://auth-server:8080/"
       TF_VAR_kc_access_token_lifespan: "${KC_ACCESS_TOKEN_LIFESPAN:-5m}"
       TF_VAR_mediacms_base_url: "${PUBLIC_ORIGIN:-http://localhost}:${MEDIA_CMS_HOST_PORT:-2080}"
+      TF_VAR_public_origin: "${PUBLIC_ORIGIN:-http://localhost:${INTERNAL_HOST_PORT:-1235}}"
     volumes:
       - ./configs/keycloak-config:/workspace
       - keycloak-secrets:/secrets

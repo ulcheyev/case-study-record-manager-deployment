@@ -53,6 +53,7 @@ def read_secret(
             with open(path) as f:
                 secret = f.read().strip()
                 if secret:
+                    print("Secrets injected...")
                     return secret
 
         if time.time() - start > timeout:
@@ -66,6 +67,7 @@ def read_secret(
 
 
 OIDC_SECRET = read_secret()
+REGISTER_ALLOWED = False
 
 SOCIALACCOUNT_PROVIDERS = {
     "openid_connect": {

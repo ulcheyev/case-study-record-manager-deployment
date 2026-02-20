@@ -16,8 +16,11 @@ terraform apply -auto-approve
 
 echo "Terraform applied. Extracting secret..."
 
-SECRET=$(terraform output -raw mediacms_client_secret)
+MEDIACMS_SECRET=$(terraform output -raw mediacms_client_secret)
+ANNOTATOR_SECRET=$(terraform output -raw annotator_client_secret)
 mkdir -p /secrets
-echo "$SECRET" > /secrets/mediacms_client_secret
+echo "$MEDIACMS_SECRET" > /secrets/mediacms_client_secret
+echo "$ANNOTATOR_SECRET" > /secrets/annotator_client_secret
+head -c 32 /dev/urandom | base64 | tr -d '\n' > /secrets/oauth2_cookie_secret
 
 echo "Done."

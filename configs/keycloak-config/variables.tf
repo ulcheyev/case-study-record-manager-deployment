@@ -25,3 +25,12 @@ variable "kc_access_token_lifespan" {
   type        = string
   default     = "5m"
 }
+
+
+variable "mediacms_base_url" {
+  type = string
+}
+
+variable "public_origin" {
+  type = string
+}
