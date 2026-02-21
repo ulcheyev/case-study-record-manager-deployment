@@ -24,7 +24,7 @@ resource "keycloak_openid_user_realm_role_protocol_mapper" "realm_roles_mapper" 
 
   add_to_access_token = true
   add_to_id_token     = false
-  add_to_userinfo     = false
+  add_to_userinfo     = true
 }
 
 resource "keycloak_openid_client_default_scopes" "mediacms_default_scopes" {

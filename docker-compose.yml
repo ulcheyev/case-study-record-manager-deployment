@@ -36,6 +36,7 @@ services:
     restart: always
     depends_on:
       - keycloak-config
+      - redis
     extra_hosts:  # TODO delete for prod
       - "localhost:host-gateway"
     expose:
@@ -50,7 +51,7 @@ services:
       OAUTH2_PROXY_OIDC_ISSUER_URL: "${PUBLIC_ORIGIN:-http://localhost:${INTERNAL_HOST_PORT:-1235}}${APP_ROOT_PATH:-}/services/auth/realms/record-manager"
       OAUTH2_PROXY_EMAIL_DOMAINS: "*"
       OAUTH2_PROXY_REDIRECT_URL: "${PUBLIC_ORIGIN:-http://localhost:${INTERNAL_HOST_PORT:-1235}}${APP_ROOT_PATH:-}/oauth2/callback"
-      OAUTH2_PROXY_ALLOWED_ROLES: "annotator-access-role"
+      OAUTH2_PROXY_ALLOWED_GROUPS: "annotator-access-role"
       OAUTH2_PROXY_OIDC_GROUPS_CLAIM: "realm_access.roles"
       OAUTH2_PROXY_SCOPE: "openid profile email"
       OAUTH2_PROXY_HTTP_ADDRESS: "0.0.0.0:4180"
@@ -127,7 +128,7 @@ services:
       BASE_PATH: "${APP_ROOT_PATH:-}${ANNOTATOR_PATH:-/annotator}"
       APP_MODE: "prod"
       ANNOTATIONS_API_URL: "${ANNOTATIONS_API_URL:-${PUBLIC_ORIGIN:-http://localhost:1235}${APP_ROOT_PATH:-}/services/annotator-server/annotation/media}"
-      MEDIA_ASSET_API_URL: "${MEDIA_ASSET_API_URL:-${PUBLIC_ORIGIN:-http://localhost:1235}}${APP_ROOT_PATH:-}/services/annotator-server/asset}"
+      MEDIA_ASSET_API_URL: "${MEDIA_ASSET_API_URL:-${PUBLIC_ORIGIN:-http://localhost:1235}${APP_ROOT_PATH:-}/services/annotator-server/asset}"
       MEDIA_ASSETS_LIST_API_URL: "${MEDIA_ASSETS_LIST_API_URL:-${PUBLIC_ORIGIN:-http://localhost:1235}${APP_ROOT_PATH:-}/services/annotator-server/asset/adapter/playlist}"
 
   media-asset-annotator-server:
