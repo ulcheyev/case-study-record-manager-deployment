@@ -60,6 +60,7 @@ services:
       OAUTH2_PROXY_LOG_LEVEL: debug
       OAUTH2_PROXY_SESSION_STORE_TYPE: redis
       OAUTH2_PROXY_REDIS_CONNECTION_URL: redis://redis:6379
+      OAUTH2_PROXY_OIDC_LOGOUT_URL: "${PUBLIC_ORIGIN:-http://localhost:${INTERNAL_HOST_PORT:-1235}}${APP_ROOT_PATH:-}/services/auth/realms/record-manager/protocol/openid-connect/logout"
       OAUTH2_PROXY_COOKIE_SECURE: "false"  # TODO true in production
       OAUTH2_PROXY_COOKIE_SAMESITE: "lax"
       OAUTH2_PROXY_COOKIE_HTTPONLY: "true"
