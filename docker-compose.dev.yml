@@ -1,0 +1,14 @@
+services:
+  oauth2-proxy:
+    extra_hosts:
+      - "localhost:host-gateway"
+
+    environment:
+      OAUTH2_PROXY_INSECURE_OIDC_SKIP_ISSUER_VERIFICATION: "true"
+      OAUTH2_PROXY_LOG_LEVEL: debug
+      OAUTH2_PROXY_COOKIE_SECURE: "false"
+
+  mediacms:
+    environment:
+      DEBUG: "True"
+

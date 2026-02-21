@@ -1,0 +1,140 @@
+
+@prefix : <http://onto.fel.cvut.cz/ontologies/form/media/> .
+@prefix fm: <http://onto.fel.cvut.cz/ontologies/form/media/> .
+@prefix fma: <http://onto.fel.cvut.cz/ontologies/form/media/annotation/> .
+@prefix form: <http://onto.fel.cvut.cz/ontologies/form/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@base <http://onto.fel.cvut.cz/ontologies/form/media/> .
+
+GRAPH <http://onto.fel.cvut.cz/ontologies/form/media/> {
+
+<http://onto.fel.cvut.cz/ontologies/form/media/> rdf:type owl:Ontology ;
+    owl:versionIRI fm:v0.0.1 ;
+    rdfs:comment "Ontology for media assets the form domain."@en .
+
+<http://onto.fel.cvut.cz/ontologies/form/media/annotation> rdf:type owl:Ontology ;
+    owl:versionIRI fm:v0.0.1 ;
+    rdfs:comment "Ontology for annotations within for media assets."@en .
+
+#################################################################
+#    Classes
+#################################################################
+
+fm:asset rdf:type owl:Class ;
+    rdfs:label "Media Asset"@en ;
+    rdfs:comment "Represents an image or video asset attached to a form."@en .
+
+fm:annotation rdf:type owl:Class ;
+    rdfs:label "Annotation"@en ;
+    rdfs:comment "Represents a temporal or spatial annotation bound to a media asset."@en .
+
+#################################################################
+#    Object Properties
+#################################################################
+
+###  http://onto.fel.cvut.cz/ontologies/form/media/has-annotation
+fm:has-annotation rdf:type owl:ObjectProperty ;
+    rdfs:domain fm:asset ;
+    rdfs:range fm:annotation ;
+    rdfs:comment "Links a media asset to its annotations."@en .
+
+###  http://onto.fel.cvut.cz/ontologies/form/media/is-annotation-of
+fma:is-annotation-of rdf:type owl:ObjectProperty ;
+    rdfs:domain fm:annotation ;
+    rdfs:range fm:asset ;
+    owl:inverseOf fm:has-annotation ;
+    rdfs:comment "Inverse relation linking annotation back to the media asset."@en .
+
+#################################################################
+#    Datatype Properties
+#################################################################
+
+###  http://onto.fel.cvut.cz/ontologies/form/media/has-source
+fm:has-source rdf:type owl:DatatypeProperty ;
+    rdfs:domain fm:asset ;
+    rdfs:range xsd:anyURI ;
+    rdfs:comment "Specifies the original source URL of the media asset."@en .
+
+###  http://onto.fel.cvut.cz/ontologies/form/media/has-reference-id
+fm:has-reference-id rdf:type owl:DatatypeProperty ;
+    rdfs:domain fm:asset ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Specifies the adapter source id of the media asset."@en .
+
+###  http://onto.fel.cvut.cz/ontologies/form/media/has-media-type
+fm:has-media-type rdf:type owl:DatatypeProperty ;
+    rdfs:domain fm:asset ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Specifies the media type (image or video)."@en .
+
+###  http://onto.fel.cvut.cz/ontologies/form/media/has-annotation-type
+fma:has-annotation-type rdf:type owl:DatatypeProperty ;
+    rdfs:domain fm:annotation ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Specifies the type of annotation (text, polyline, etc.)."@en .
+
+###  http://onto.fel.cvut.cz/ontologies/form/media/has-start-time
+fma:has-start-time rdf:type owl:DatatypeProperty ;
+    rdfs:domain fm:annotation ;
+    rdfs:range xsd:double ;
+    rdfs:comment "Specifies the start time of the annotation in seconds."@en .
+
+###  http://onto.fel.cvut.cz/ontologies/form/media/has-end-time
+fma:has-end-time rdf:type owl:DatatypeProperty ;
+    rdfs:domain fm:annotation ;
+    rdfs:range xsd:double ;
+    rdfs:comment "Specifies the end time of the annotation in seconds."@en .
+
+###  http://onto.fel.cvut.cz/ontologies/form/media/has-geometry-points
+fma:has-geometry-points rdf:type owl:DatatypeProperty ;
+    rdfs:domain fm:annotation ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Specifies geometry points for spatial annotations (normalized coordinates)."@en .
+
+###  http://onto.fel.cvut.cz/ontologies/form/media/has-color
+fma:has-color rdf:type owl:DatatypeProperty ;
+    rdfs:domain fm:annotation ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Specifies the color of the annotation."@en .
+
+###  http://onto.fel.cvut.cz/ontologies/form/media/has-opacity
+fma:has-opacity rdf:type owl:DatatypeProperty ;
+    rdfs:domain fm:annotation ;
+    rdfs:range xsd:double ;
+    rdfs:comment "Specifies the opacity of the annotation."@en .
+
+###  http://onto.fel.cvut.cz/ontologies/form/media/has-text
+fma:has-text rdf:type owl:DatatypeProperty ;
+    rdfs:domain fm:annotation ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Specifies textual content of a text annotation."@en .
+
+###  http://onto.fel.cvut.cz/ontologies/form/media/has-font-size
+fma:has-font-size rdf:type owl:DatatypeProperty ;
+    rdfs:domain fm:annotation ;
+    rdfs:range xsd:double ;
+    rdfs:comment "Specifies font size for text annotations."@en .
+
+###  http://onto.fel.cvut.cz/ontologies/form/media/has-font-weight
+fma:has-font-weight rdf:type owl:DatatypeProperty ;
+    rdfs:domain fm:annotation ;
+    rdfs:range xsd:int ;
+    rdfs:comment "Specifies font weight for text annotations."@en .
+
+###  http://onto.fel.cvut.cz/ontologies/form/media/has-stroke-width
+fma:has-stroke-width rdf:type owl:DatatypeProperty ;
+    rdfs:domain fm:annotation ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Specifies stroke width for shape annotations."@en .
+
+###  http://onto.fel.cvut.cz/ontologies/form/media/has-fill-color
+fma:has-fill-color rdf:type owl:DatatypeProperty ;
+    rdfs:domain fm:annotation ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Specifies fill color for shape annotations."@en .
+}
+
