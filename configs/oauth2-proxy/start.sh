@@ -12,4 +12,7 @@ done
 
 echo "Secrets injected."
 
-exec /bin/oauth2-proxy
+export OAUTH2_PROXY_CLIENT_SECRET="$(cat $SECRET_FILE)"
+export OAUTH2_PROXY_COOKIE_SECRET="$(cat $COOKIE_SECRET_FILE)"
+
+exec /bin/oauth2-proxyecho $OAUTH2_PROXY_CLIENT_ID

@@ -4,7 +4,7 @@ services:
     image: nginx:latest
     container_name: ${RECORD_SET_NAME:-rm}-gateway
     ports:
-      - "127.0.0.1:${INTERNAL_HOST_PORT:-1235}:80"
+      - "${INTERNAL_HOST_PORT:-1235}:80"
     restart: always
     depends_on:
       - record-manager
@@ -36,23 +36,33 @@ services:
     restart: always
     depends_on:
       - keycloak-config
+    extra_hosts:  # TODO delete for prod
+      - "localhost:host-gateway"
     expose:
       - "4180"
     volumes:
       - keycloak-secrets:/secrets
     environment:
       OAUTH2_PROXY_PROVIDER: oidc
+      # TODO delete for prod
+      OAUTH2_PROXY_INSECURE_OIDC_SKIP_ISSUER_VERIFICATION: "true"
       OAUTH2_PROXY_CLIENT_ID: media-asset-annotator
-      OAUTH2_PROXY_OIDC_ISSUER_URL: http://auth-server:8080/realms/record-manager
-      OAUTH2_PROXY_COOKIE_SECRET_FILE: "/secrets/oauth2_cookie_secret"
-      OAUTH2_PROXY_CLIENT_SECRET_FILE: "/secrets/annotator_client_secret"
+      OAUTH2_PROXY_OIDC_ISSUER_URL: "${PUBLIC_ORIGIN:-http://localhost:${INTERNAL_HOST_PORT:-1235}}${APP_ROOT_PATH:-}/services/auth/realms/record-manager"
       OAUTH2_PROXY_EMAIL_DOMAINS: "*"
+      OAUTH2_PROXY_REDIRECT_URL: "${PUBLIC_ORIGIN:-http://localhost:${INTERNAL_HOST_PORT:-1235}}${APP_ROOT_PATH:-}/oauth2/callback"
       OAUTH2_PROXY_ALLOWED_ROLES: "annotator-access-role"
       OAUTH2_PROXY_OIDC_GROUPS_CLAIM: "realm_access.roles"
       OAUTH2_PROXY_SCOPE: "openid profile email"
       OAUTH2_PROXY_HTTP_ADDRESS: "0.0.0.0:4180"
       OAUTH2_PROXY_REVERSE_PROXY: "true"
       OAUTH2_PROXY_SET_XAUTHREQUEST: "true"
+      OAUTH2_PROXY_LOG_LEVEL: debug
+      OAUTH2_PROXY_SESSION_STORE_TYPE: redis
+      OAUTH2_PROXY_REDIS_CONNECTION_URL: redis://redis:6379
+      OAUTH2_PROXY_COOKIE_SECURE: "false"  # TODO true in production
+      OAUTH2_PROXY_COOKIE_SAMESITE: "lax"
+      OAUTH2_PROXY_COOKIE_HTTPONLY: "true"
+      OAUTH2_PROXY_UPSTREAMS: static://200
 
   record-manager:
     image: ghcr.io/kbss-cvut/record-manager-ui:latest
@@ -116,9 +126,9 @@ services:
     environment:
       BASE_PATH: "${APP_ROOT_PATH:-}${ANNOTATOR_PATH:-/annotator}"
       APP_MODE: "prod"
-      ANNOTATIONS_API_URL: "${ANNOTATIONS_API_URL:-${PUBLIC_ORIGIN:-http://localhost:1235}/services/annotator-server/annotation/media}"
-      MEDIA_ASSET_API_URL: "${MEDIA_ASSET_API_URL:-${PUBLIC_ORIGIN:-http://localhost:1235}/services/annotator-server/asset}"
-      MEDIA_ASSETS_LIST_API_URL: "${MEDIA_ASSETS_LIST_API_URL:-${PUBLIC_ORIGIN:-http://localhost:1235}/services/annotator-server/asset/adapter/playlist}"
+      ANNOTATIONS_API_URL: "${ANNOTATIONS_API_URL:-${PUBLIC_ORIGIN:-http://localhost:1235}${APP_ROOT_PATH:-}/services/annotator-server/annotation/media}"
+      MEDIA_ASSET_API_URL: "${MEDIA_ASSET_API_URL:-${PUBLIC_ORIGIN:-http://localhost:1235}}${APP_ROOT_PATH:-}/services/annotator-server/asset}"
+      MEDIA_ASSETS_LIST_API_URL: "${MEDIA_ASSETS_LIST_API_URL:-${PUBLIC_ORIGIN:-http://localhost:1235}${APP_ROOT_PATH:-}/services/annotator-server/asset/adapter/playlist}"
 
   media-asset-annotator-server:
     image: manki1337/media-asset-annotator-server:latest
@@ -266,8 +276,8 @@ services:
       KC_IMPORT: realm-export.json
       KC_HOSTNAME_URL: "${PUBLIC_ORIGIN:-http://localhost:${INTERNAL_HOST_PORT:-1235}}${APP_ROOT_PATH:-}/services/auth/"
       KC_HOSTNAME_ADMIN_URL: "${PUBLIC_ORIGIN:-http://localhost:${INTERNAL_HOST_PORT:-1235}}${APP_ROOT_PATH:-}/services/auth/"
-      KC_HOSTNAME_STRICT_BACKCHANNEL: false
       KC_HTTP_ENABLED: true
+      KC_PROXY: edge
       KEYCLOAK_ADMIN: ${KC_ADMIN_USER}
       KEYCLOAK_ADMIN_PASSWORD: ${KC_ADMIN_PASSWORD}
       DB_VENDOR: POSTGRES

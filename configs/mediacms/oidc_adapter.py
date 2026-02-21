@@ -10,6 +10,8 @@ class RoleRestrictedSocialAccountAdapter(DefaultSocialAccountAdapter):
         claims = sociallogin.account.extra_data or {}
         roles = claims.get("realm_access", {}).get("roles", [])
 
+        print(claims)
+
         if settings.MEDIACMS_REQUIRED_ROLE not in roles:
             logger.warning(
                 "[Access denied] User %s missing required role '%s'.",

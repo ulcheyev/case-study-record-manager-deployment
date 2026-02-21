@@ -21,6 +21,6 @@ ANNOTATOR_SECRET=$(terraform output -raw annotator_client_secret)
 mkdir -p /secrets
 echo "$MEDIACMS_SECRET" > /secrets/mediacms_client_secret
 echo "$ANNOTATOR_SECRET" > /secrets/annotator_client_secret
-head -c 32 /dev/urandom | base64 | tr -d '\n' > /secrets/oauth2_cookie_secret
+head -c 32 /dev/urandom | base64 | head -c 32 > /secrets/oauth2_cookie_secret
 
 echo "Done."
