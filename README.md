@@ -65,7 +65,6 @@ For advanced configuration, refer to:
 
 **Important**:
 - Users must have appropriate roles assigned in Keycloak.
-- Without correct role assignment, access will be denied.
 
 ---
 
@@ -152,7 +151,7 @@ If the configuration was changed via the Keycloak configuration container at run
 - Roles are defined at the realm level and grouped via Terraform.
 - Users must 
   - be assigned to a group or
-  - roles must be assigned to users to gain access to services
+  - roles must be assigned to users to gain access to services.
 - Each group contains a predefined set of realm roles.
 
 
