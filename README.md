@@ -8,37 +8,17 @@ The deployment is based on:
 ---
 ## 📑 Table of Contents
 
-1. [Architecture Overview](#1-architecture-overview)
-2. [Deployment Setup](#2-deployment-setup)
-  - [2.1 Authentication Configuration](#21-authentication-configuration)
-  - [2.2 MediaCMS Configuration](#22-mediacms-configuration)
-  - [2.3 Environment Configuration](#23-environment-configuration)
-  - [2.4 Build and Start Services](#24-build-and-start-services)
-3. [Role and Group Management](#3-role-and-group-management)
+1. [Deployment Setup](#2-deployment-setup)
+  - [1.1 Authentication Configuration](#21-authentication-configuration)
+  - [1.2 MediaCMS Configuration](#22-mediacms-configuration)
+  - [1.3 Environment Configuration](#23-environment-configuration)
+  - [1.4 Build and Start Services](#24-build-and-start-services)
+2. [Role and Group Management](#3-role-and-group-management)
 ---
 
+## 1. Deployment Setup
 
-## 1. Architecture Overview
-
-The deployment integrates the following services:
-
-**Keycloak** – Identity & Access Management (IAM)
-- **Record Manager UI** & **Record Manager Server**
-- **Media Asset Annotator** & **Media Asset Annotator Server**
-- **MediaCMS**
-- **GraphDB**
-- **PostgreSQL**
-- **Redis**
-- **NGINX Gateway**
-- **OAuth2 Proxy**
-
-Authentication is handled via **OIDC**, centrally managed by Keycloak.
-
----
-
-## 2. Deployment Setup
-
-### 2.1 Authentication Configuration
+### 1.1 Authentication Configuration
 
 Before starting the deployment, configure authentication.
 
@@ -54,7 +34,7 @@ Authentication is based on:
 
 ---
 
-### 2.2 MediaCMS Configuration
+### 1.2 MediaCMS Configuration
 
 The default configuration provides fundamental access.
 
@@ -68,7 +48,7 @@ For advanced configuration, refer to:
 
 ---
 
-### 2.3 Environment Configuration
+### 1.3 Environment Configuration
 
 Configure environment variables before starting the deployment.
 
@@ -87,7 +67,7 @@ Then configure the following (⚠️ Important):
 
 ---
 
-### 2.4 Build and Start Services
+### 1.4 Build and Start Services
 
 The deployment supports two modes:
 
@@ -146,7 +126,7 @@ If the configuration was changed via the Keycloak configuration container at run
 
 ---
 
-## 3. Role and Group Management
+## 2. Role and Group Management
 
 - Roles are defined at the realm level and grouped via Terraform.
 - Users must 
