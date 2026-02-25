@@ -14,7 +14,7 @@ terraform init
 terraform import keycloak_realm.realm $KC_REALM
 terraform apply -auto-approve
 
-echo "Terraform applied. Extracting secret..."
+echo "Terraform applied. Extracting secrets..."
 
 MEDIACMS_SECRET=$(terraform output -raw mediacms_client_secret)
 ANNOTATOR_SECRET=$(terraform output -raw annotator_client_secret)

@@ -169,7 +169,7 @@ services:
     restart: on-failure
 
   mediacms:
-    image: mediacms/mediacms:7.2
+    build: ./configs/mediacms
     ports:
       - '${MEDIA_CMS_HOST_PORT-2080}:80'
     container_name: ${RECORD_SET_NAME:-rm}-media-cms-web
@@ -195,13 +195,10 @@ services:
       - keycloak-config
     restart: on-failure
     volumes:
-      - ./configs/mediacms/local_settings.py:/home/mediacms.io/mediacms/deploy/docker/local_settings.py
-      - ./configs/mediacms/oidc_adapter.py:/home/mediacms.io/mediacms/deploy/docker/oidc_adapter.py
-      - ./configs/mediacms/nginx.conf:/home/mediacms.io/mediacms/deploy/docker/nginx_http_only.conf
-      - ./configs/mediacms/images/userlogos:/home/mediacms.io/mediacms/media_files/userlogos
+      - mediacms-media:/home/mediacms.io/mediacms/media_files
       - keycloak-secrets:/secrets
 
-  celery_beat:
+  celery-beat:
     image: mediacms/mediacms:7.2
     container_name: ${RECORD_SET_NAME:-rm}-media-cms-beat
     environment:
@@ -213,8 +210,10 @@ services:
     depends_on:
       - redis
     restart: on-failure
+    volumes:
+      - mediacms-media:/home/mediacms.io/mediacms/media_files
 
-  celery_worker:
+  celery-worker:
     image: mediacms/mediacms:7.2
     container_name: ${RECORD_SET_NAME:-rm}-media-cms-worker
     deploy:
@@ -227,14 +226,19 @@ services:
     depends_on:
       - migrations
     restart: on-failure
+    volumes:
+      - mediacms-media:/home/mediacms.io/mediacms/media_files
 
   redis:
     image: redis
     container_name: ${RECORD_SET_NAME:-rm}-redis
     hostname: norish-redis
+    command: redis-server --appendonly yes
     healthcheck:
       test: [ 'CMD-SHELL', 'redis-cli ping || exit 1' ]
     restart: on-failure:5
+    volumes:
+      - redis-data:/data
 
   db-server:
     build:
@@ -327,3 +331,5 @@ volumes:
   auth-server:
   postgres:
   keycloak-secrets:
+  mediacms-media:
+  redis-data:

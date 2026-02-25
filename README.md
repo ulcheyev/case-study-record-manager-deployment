@@ -8,22 +8,43 @@ The deployment is based on:
 ---
 ## 📑 Table of Contents
 
-1. [Deployment Setup](#2-deployment-setup)
-  - [1.1 Authentication Configuration](#21-authentication-configuration)
-  - [1.2 MediaCMS Configuration](#22-mediacms-configuration)
-  - [1.3 Environment Configuration](#23-environment-configuration)
-  - [1.4 Build and Start Services](#24-build-and-start-services)
-2. [Role and Group Management](#3-role-and-group-management)
+1. [Architecture Overview](#1-architecture-overview)
+2. [Deployment Setup](#2-deployment-setup)
+  - [2.1 Authentication Configuration](#21-authentication-configuration)
+  - [2.2 Scaling Configuration](#22-scaling-configuration)
+  - [2.3 MediaCMS Configuration](#23-mediacms-configuration)
+  - [2.4 Environment Configuration](#24-environment-configuration)
+  - [2.5 Build and Start Services](#25-build-and-start-services)
+3. [Role and Group Management](#3-role-and-group-management)
 ---
 
-## 1. Deployment Setup
 
-### 1.1 Authentication Configuration
+## 1. Architecture Overview
+
+The deployment integrates the following services:
+
+**Keycloak** – Identity & Access Management (IAM)
+- **Record Manager UI** & **Record Manager Server**
+- **Media Asset Annotator** & **Media Asset Annotator Server**
+- **MediaCMS**
+- **GraphDB**
+- **PostgreSQL**
+- **Redis**
+- **NGINX Gateway**
+- **OAuth2 Proxy**
+
+Authentication is handled via **OIDC**, centrally managed by Keycloak.
+
+---
+
+## 2. Deployment Setup
+
+### 2.1 Authentication Configuration
 
 Before starting the deployment, configure authentication.
 
 Refer to:
-- 🔗 [Authentication Docs](/AUTH.md)
+- 🔗 [Authentication Docs](./docs/AUTH.md)
 
 Authentication is based on:
 - **Keycloak realm**: `record-manager`
@@ -34,7 +55,11 @@ Authentication is based on:
 
 ---
 
-### 1.2 MediaCMS Configuration
+### 2.2 Scaling Configuration
+Refer to:
+- 🔗 [Scaling Docs](/docs/SCALE.md)
+
+### 2.3 MediaCMS Configuration
 
 The default configuration provides fundamental access.
 
@@ -45,10 +70,11 @@ For advanced configuration, refer to:
 
 **Important**:
 - Users must have appropriate roles assigned in Keycloak.
+- Without correct role assignment, access will be denied.
 
 ---
 
-### 1.3 Environment Configuration
+### 2.4 Environment Configuration
 
 Configure environment variables before starting the deployment.
 
@@ -67,7 +93,7 @@ Then configure the following (⚠️ Important):
 
 ---
 
-### 1.4 Build and Start Services
+### 2.5 Build and Start Services
 
 The deployment supports two modes:
 
@@ -126,12 +152,12 @@ If the configuration was changed via the Keycloak configuration container at run
 
 ---
 
-## 2. Role and Group Management
+## 3. Role and Group Management
 
 - Roles are defined at the realm level and grouped via Terraform.
 - Users must 
   - be assigned to a group or
-  - roles must be assigned to users to gain access to services.
+  - roles must be assigned to users to gain access to services
 - Each group contains a predefined set of realm roles.
 
 
