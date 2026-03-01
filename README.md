@@ -57,7 +57,7 @@ Authentication is based on:
 
 ### 2.2 Scaling Configuration
 Refer to:
-- 🔗 [Scaling Docs](/docs/SCALE.md)
+- 🔗 [Scaling Docs](./docs/SCALE.md)
 
 ### 2.3 MediaCMS Configuration
 
@@ -104,7 +104,7 @@ The deployment supports two modes:
 
 #### 🔹 Local Development Mode
 
-If the stack is running locally (e.g., `http://localhost`), you must apply the development override file.
+If the stack is running locally (e.g., `http://localhost`), you must apply the local override file.
 
 This enables:
 
@@ -116,7 +116,7 @@ Run:
 ```bash
 docker compose \
   -f docker-compose.yml \
-  -f docker-compose.dev.yml \
+  -f docker-compose.local.yml \
   --env-file .env \
   up --build -d
 ```
@@ -131,24 +131,22 @@ Run:
 docker compose --env-file .env up --build -d
 ```
 
-#### Rebuilding After Keycloak Changes
+#### Refreshing After Keycloak Changes
+The keycloak-config (Terraform) container is the source of truth for Keycloak configuration.
+Manual changes made in the Keycloak Admin UI are not supported to propagate and may be overwritten by Terraform.
 
-If the configuration was changed via the Keycloak configuration container at runtime, the whole stack must be rebuilt.
+##### Client Secrets Update
+Client secrets `keycloak-secrets` are shared at runtime. The following services consume secrets:
+- OAuth2 Proxy (Annotator authentication)
+- MediaCMS
 
-1. Stop and remove volumes:
-   ```bash
-   docker compose down -v
-   ```
-
-2. Rebuild and restart:
-   ```bash
-   docker compose --env-file .env up --build -d
-   ```
-
-- Updated client IDs are injected
-- Updated secrets are propagated
-- Updated issuer URLs are validated
-- OAuth2 proxy configuration remains consistent
+If a client secret is modified manually in the Keycloak UI it is needed to regenerate and synchronize the secrets. Re-run the `keycloak-config` container and restart the dependent services:
+```bash
+docker compose down keycloak-config oauth2-proxy mediacms nginx
+docker volume rm <project>_keycloak-secrets
+docker compose --env-file .env up -d keycloak-config oauth2-proxy mediacms nginx
+```
+In order to resolve newly assigned IP addresses after restart, gateway need to be restarted too.
 
 ---
 

@@ -4,7 +4,6 @@
 # Local configuration/deployment files
 *.iml
 .env
-docker-compose.local.yml
 
 # Terraform states
 *.tfstate

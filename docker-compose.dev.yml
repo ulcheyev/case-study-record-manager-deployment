@@ -1,14 +1,29 @@
 services:
-  oauth2-proxy:
-    extra_hosts:
-      - "localhost:host-gateway"
 
+  oauth2-proxy:
     environment:
-      OAUTH2_PROXY_INSECURE_OIDC_SKIP_ISSUER_VERIFICATION: "true"
-      OAUTH2_PROXY_LOG_LEVEL: debug
-      OAUTH2_PROXY_COOKIE_SECURE: "false"
+      OAUTH2_PROXY_LOG_LEVEL: "debug"
+
+  media-asset-annotator-server:
+    environment:
+      LOGGING_LEVEL_ROOT: "DEBUG"
+      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB: "TRACE"
 
   mediacms:
     environment:
       DEBUG: "True"
+      DO_NOT_TRANSCODE_VIDEO: "True"
+
+  celery-worker:
+    deploy:
+      replicas: 0
+
+  celery-beat:
+    deploy:
+      replicas: 0
+
+  record-manager-server:
+    environment:
+      LOGGING_LEVEL_ROOT: "DEBUG"
+      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB: "TRACE"
 

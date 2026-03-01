@@ -62,10 +62,9 @@ def read_secret(
             )
         # TODO exit 1
 
-        print("Waiting for OIDC secret...")
         time.sleep(interval)
 
-
+print("Waiting for OIDC secret...")
 OIDC_SECRET = read_secret()
 REGISTER_ALLOWED = False
 
@@ -89,6 +88,10 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 
+MIDDLEWARE = MIDDLEWARE + [
+    'deploy.docker.protected_media.ProtectedMediaMiddleware',
+]
+
 GLOBAL_LOGIN_REQUIRED = True
 LOGIN_URL = "/accounts/oidc/keycloak/login/"
 LOGIN_REDIRECT_URL = "/"
@@ -105,5 +108,4 @@ BROKER_URL = REDIS_LOCATION
 CELERY_RESULT_BACKEND = BROKER_URL
 
 MP4HLS_COMMAND = "/home/mediacms.io/bento4/bin/mp4hls"
-
 DEBUG = os.getenv('DEBUG', 'False') == 'True'

@@ -54,7 +54,6 @@ services:
       OAUTH2_PROXY_HTTP_ADDRESS: "0.0.0.0:4180"
       OAUTH2_PROXY_REVERSE_PROXY: "true"
       OAUTH2_PROXY_SET_XAUTHREQUEST: "true"
-      OAUTH2_PROXY_LOG_LEVEL: debug
       OAUTH2_PROXY_SESSION_STORE_TYPE: redis
       OAUTH2_PROXY_REDIS_CONNECTION_URL: redis://redis:6379
       OAUTH2_PROXY_OIDC_LOGOUT_URL: "${PUBLIC_ORIGIN:-http://localhost:${INTERNAL_HOST_PORT:-1235}}${APP_ROOT_PATH:-}/services/auth/realms/record-manager/protocol/openid-connect/logout"
@@ -170,9 +169,10 @@ services:
 
   mediacms:
     build: ./configs/mediacms
+    image: ${RECORD_SET_NAME:-rm}-media-cms-web
+    container_name: ${RECORD_SET_NAME:-rm}-media-cms-web
     ports:
       - '${MEDIA_CMS_HOST_PORT-2080}:80'
-    container_name: ${RECORD_SET_NAME:-rm}-media-cms-web
     healthcheck:
       test: timeout 10s bash -c ':> /dev/tcp/127.0.0.1/80' || exit 1
       interval: 10s
@@ -199,7 +199,8 @@ services:
       - keycloak-secrets:/secrets
 
   celery-beat:
-    image: mediacms/mediacms:7.2
+    build: ./configs/mediacms
+    image: ${RECORD_SET_NAME:-rm}-media-cms-web
     container_name: ${RECORD_SET_NAME:-rm}-media-cms-beat
     environment:
       ENABLE_UWSGI: no
@@ -207,14 +208,18 @@ services:
       ENABLE_CELERY_SHORT: no
       ENABLE_CELERY_LONG: no
       ENABLE_MIGRATIONS: no
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     depends_on:
       - redis
     restart: on-failure
     volumes:
       - mediacms-media:/home/mediacms.io/mediacms/media_files
-
+      - keycloak-secrets:/secrets
+  
   celery-worker:
-    image: mediacms/mediacms:7.2
+    build: ./configs/mediacms
+    image: ${RECORD_SET_NAME:-rm}-media-cms-web
     container_name: ${RECORD_SET_NAME:-rm}-media-cms-worker
     deploy:
       replicas: 1
@@ -223,11 +228,14 @@ services:
       ENABLE_NGINX: no
       ENABLE_CELERY_BEAT: no
       ENABLE_MIGRATIONS: no
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     depends_on:
       - migrations
     restart: on-failure
     volumes:
       - mediacms-media:/home/mediacms.io/mediacms/media_files
+      - keycloak-secrets:/secrets  
 
   redis:
     image: redis
