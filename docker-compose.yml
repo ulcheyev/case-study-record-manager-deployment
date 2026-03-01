@@ -22,6 +22,7 @@ services:
       INTERNAL_RECORD_MANAGER_SERVER_SERVICE: "${INTERNAL_RECORD_MANAGER_SERVER_SERVICE:-http://record-manager-server:8080}"
       INTERNAL_ANNOTATOR_SERVER_SERVICE: "${INTERNAL_ANNOTATOR_SERVER_SERVICE:-http://media-asset-annotator-server}"
       INTERNAL_SPIPES_ENGINE_SERVICE: "${INTERNAL_SPIPES_ENGINE_SERVICE:-http://s-pipes-engine:8080}"
+      AUTH_REQUEST_DIRECTIVE: "auth_request /oauth2/auth; error_page 401 = /oauth2/start;"
     volumes:
       - ./configs/nginx/nginx.conf:/etc/nginx/templates/nginx.conf.template:ro
       - ./configs/nginx/error.html:/usr/share/nginx/html/error.html:ro
@@ -123,8 +124,8 @@ services:
     environment:
       BASE_PATH: "${APP_ROOT_PATH:-}${ANNOTATOR_PATH:-/annotator}"
       APP_MODE: "prod"
-      ANNOTATIONS_API_URL: "${ANNOTATIONS_API_URL:-${PUBLIC_ORIGIN:-http://localhost:1235}${APP_ROOT_PATH:-}/services/annotator-server/annotation/media}"
       MEDIA_ASSET_API_URL: "${MEDIA_ASSET_API_URL:-${PUBLIC_ORIGIN:-http://localhost:1235}${APP_ROOT_PATH:-}/services/annotator-server/asset}"
+      ANNOTATIONS_API_URL: "${ANNOTATIONS_API_URL:-${PUBLIC_ORIGIN:-http://localhost:1235}${APP_ROOT_PATH:-}/services/annotator-server/annotation/media}"
       MEDIA_ASSETS_LIST_API_URL: "${MEDIA_ASSETS_LIST_API_URL:-${PUBLIC_ORIGIN:-http://localhost:1235}${APP_ROOT_PATH:-}/services/annotator-server/asset/adapter/playlist}"
 
   media-asset-annotator-server:
