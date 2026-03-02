@@ -147,7 +147,8 @@ services:
       CORS_ALLOWED_ORIGINS: "${PUBLIC_ORIGIN:-http://media-asset-annotator,http://localhost:${INTERNAL_HOST_PORT:-1235}}"
 
   migrations:
-    image: mediacms/mediacms:7.2
+    build: ./configs/mediacms
+    image: ${RECORD_SET_NAME:-rm}-media-cms-web
     container_name: ${RECORD_SET_NAME:-rm}-media-cms-migration
     environment:
       ENABLE_UWSGI: no
@@ -167,6 +168,10 @@ services:
       - redis
       - postgres
     restart: on-failure
+    volumes:
+      - keycloak-secrets:/secrets
+    
+
 
   mediacms:
     build: ./configs/mediacms
@@ -277,14 +282,13 @@ services:
     image: ghcr.io/kbss-cvut/keycloak-graphdb-user-replicator/keycloak-graphdb:latest
     container_name: ${RECORD_SET_NAME:-rm}-auth-server
     command:
-      - start --import-realm --features="token-exchange,admin-fine-grained-authz"
+      - start --features="token-exchange,admin-fine-grained-authz"
     restart: on-failure:5
     expose:
       - "8080"
     depends_on:
       - postgres
     environment:
-      KC_IMPORT: realm-export.json
       KC_HOSTNAME_URL: "${PUBLIC_ORIGIN:-http://localhost:${INTERNAL_HOST_PORT:-1235}}${APP_ROOT_PATH:-}/services/auth/"
       KC_HOSTNAME_ADMIN_URL: "${PUBLIC_ORIGIN:-http://localhost:${INTERNAL_HOST_PORT:-1235}}${APP_ROOT_PATH:-}/services/auth/"
       KC_HTTP_ENABLED: true
@@ -311,7 +315,6 @@ services:
       REALM_ID: "record-manager"
     volumes:
       - auth-server:/opt/keycloak/data
-      - ./configs/auth-server:/opt/keycloak/data/import
 
   keycloak-config:
     image: hashicorp/terraform:light
@@ -324,7 +327,7 @@ services:
       TF_VAR_kc_admin_user: "${KC_ADMIN_USER}"
       TF_VAR_kc_admin_password: "${KC_ADMIN_PASSWORD}"
       TF_VAR_kc_realm: "${KC_REALM:-record-manager}"
-      TF_VAR_kc_url: "http://auth-server:8080/"
+      TF_VAR_kc_url: "http://auth-server:8080"
       TF_VAR_kc_access_token_lifespan: "${KC_ACCESS_TOKEN_LIFESPAN:-5m}"
       TF_VAR_mediacms_base_url: "${PUBLIC_ORIGIN:-http://localhost}:${MEDIA_CMS_HOST_PORT:-2080}"
       TF_VAR_public_origin: "${PUBLIC_ORIGIN:-http://localhost:${INTERNAL_HOST_PORT:-1235}}"

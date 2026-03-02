@@ -1,7 +1,17 @@
-# Define the role groups and their associated roles
-variable "role_groups" {
-  type = map(list(string))
-  default = {
+terraform {
+  required_providers {
+    keycloak = {
+      source = "keycloak/keycloak"
+    }
+  }
+}
+
+# -------------------------------------------------------
+# Role Group Definitions
+# -------------------------------------------------------
+
+locals {
+  role_groups = {
     admin-role-group = [
       "read-all-records-role",
       "write-all-records-role",
@@ -25,6 +35,7 @@ variable "role_groups" {
       "mediacms-access-role",
       "annotator-access-role"
     ]
+
     data-collection-coordinator-role-group = [
       "read-all-users-role",
       "write-all-users-role",
@@ -41,6 +52,7 @@ variable "role_groups" {
       "mediacms-access-role",
       "annotator-access-role"
     ]
+
     organization-manager-role-group = [
       "read-organization-role",
       "write-organization-role",
@@ -48,37 +60,46 @@ variable "role_groups" {
       "write-organization-users-role",
       "read-organization-records-role",
       "write-organization-records-role",
-      "comment-record-questions-role",
+      "comment-record-questions-role"
     ]
+
     entry-clerk-role-group = [
       "read-organization-role",
       "read-organization-records-role",
       "comment-record-questions-role"
     ]
+
     reviewer-role-group = [
       "complete-records-role",
       "comment-record-questions-role"
     ]
   }
+
+  all_roles = distinct(flatten(values(local.role_groups)))
 }
 
-# Create the groups
-resource "keycloak_group" "role_groups" {
-  for_each = var.role_groups
+# -------------------------------------------------------
+# Create Groups
+# -------------------------------------------------------
 
-  realm_id = var.kc_realm
+resource "keycloak_group" "groups" {
+  for_each = local.role_groups
+
+  realm_id = var.realm_id
   name     = each.key
 }
 
-# Assign ALL roles to each group in a single resource
+# -------------------------------------------------------
+# Assign Roles To Groups
+# -------------------------------------------------------
 resource "keycloak_group_roles" "group_role_assignments" {
-  for_each = var.role_groups
+  for_each = local.role_groups
 
-  realm_id = var.kc_realm
-  group_id = keycloak_group.role_groups[each.key].id
+  realm_id = var.realm_id
+  group_id = keycloak_group.groups[each.key].id
 
   role_ids = [
     for role_name in each.value :
-    keycloak_role.realm_roles[role_name].id
+    var.realm_role_ids[role_name]
   ]
 }
