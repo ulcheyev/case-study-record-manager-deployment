@@ -10,6 +10,8 @@
 *.tfstate.*
 .terraform/
 .terraform.lock.hcl
+configs/keycloak-config/core
 
 # Mac
 .DS_Store
+

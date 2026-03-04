@@ -6,7 +6,10 @@
    enabled     = true
    access_type = "CONFIDENTIAL"
 
-   standard_flow_enabled = true
+   standard_flow_enabled         = true
+   implicit_flow_enabled         = false
+   direct_access_grants_enabled  = false
+   service_accounts_enabled      = false
 
    valid_redirect_uris = [
      "${var.public_origin}/oauth2/callback"

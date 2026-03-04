@@ -22,9 +22,10 @@ services:
       INTERNAL_RECORD_MANAGER_SERVER_SERVICE: "${INTERNAL_RECORD_MANAGER_SERVER_SERVICE:-http://record-manager-server:8080}"
       INTERNAL_ANNOTATOR_SERVER_SERVICE: "${INTERNAL_ANNOTATOR_SERVER_SERVICE:-http://media-asset-annotator-server}"
       INTERNAL_SPIPES_ENGINE_SERVICE: "${INTERNAL_SPIPES_ENGINE_SERVICE:-http://s-pipes-engine:8080}"
-      AUTH_REQUEST_DIRECTIVE: "auth_request /oauth2/auth; error_page 401 = /oauth2/start;"
+      OAUTH2_PROXY_AUTH_REQUIRED: "true"
     volumes:
       - ./configs/nginx/nginx.conf:/etc/nginx/templates/nginx.conf.template:ro
+      - ./configs/nginx/conf.d:/etc/nginx/templates/conf.d:ro
       - ./configs/nginx/error.html:/usr/share/nginx/html/error.html:ro
       - ./configs/nginx/index.html:/usr/share/nginx/html/index.html:ro
       - ./configs/nginx/images:/usr/share/nginx/html/images:ro

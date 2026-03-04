@@ -3,8 +3,8 @@ services:
   nginx:
     environment:
       NGINX_LOG_LEVEL: "debug"
-      AUTH_REQUEST_DIRECTIVE: ""
-
+      OAUTH2_PROXY_AUTH_REQUIRED: "false"
+  
   oauth2-proxy:
     environment:
       OAUTH2_PROXY_LOG_LEVEL: "debug"

@@ -22,6 +22,3 @@ resource "keycloak_realm" "realm" {
   offline_session_idle_timeout = "720h"
 }
 
-output "realm_id" {
-  value = keycloak_realm.realm.id
-}
