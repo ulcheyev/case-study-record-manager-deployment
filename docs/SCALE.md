@@ -1,6 +1,6 @@
 # Scaling MediaCMS with Docker Compose
 # Coming Soon...
-
+# TODO Diagram with worker, web, migrations, beat....
 Web container
 mediacms-web:
 image: mediacms/mediacms:7.2

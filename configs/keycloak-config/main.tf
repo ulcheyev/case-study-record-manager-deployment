@@ -15,7 +15,7 @@ provider "keycloak" {
 }
 
 module "realm" {
-  source = "./modules/realm"
+  source = "./modules/realms"
 
   kc_realm                  = var.kc_realm
   kc_access_token_lifespan  = var.kc_access_token_lifespan

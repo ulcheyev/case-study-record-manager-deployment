@@ -26,10 +26,7 @@ services:
     volumes:
       - ./configs/nginx/nginx.conf:/etc/nginx/templates/nginx.conf.template:ro
       - ./configs/nginx/conf.d:/etc/nginx/templates/conf.d:ro
-      - ./configs/nginx/error.html:/usr/share/nginx/html/error.html:ro
-      - ./configs/nginx/index.html:/usr/share/nginx/html/index.html:ro
-      - ./configs/nginx/images:/usr/share/nginx/html/images:ro
-      - ./configs/nginx/statistics.html:/usr/share/nginx/html/statistics.html:ro
+      - ./configs/nginx/static:/usr/share/nginx/html
 
   oauth2-proxy:
     build:
@@ -171,8 +168,6 @@ services:
     restart: on-failure
     volumes:
       - keycloak-secrets:/secrets
-    
-
 
   mediacms:
     build: ./configs/mediacms

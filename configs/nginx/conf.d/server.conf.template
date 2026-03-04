@@ -72,9 +72,11 @@ server {
     # Backend Services
     # ----------------------------
 
+
     location /services/mediacms/ {
         return 302 ${MEDIA_CMS_URL};
     }
+
 
     location /services/record-manager-server/ {
         proxy_pass ${INTERNAL_RECORD_MANAGER_SERVER_SERVICE}/record-manager/;
