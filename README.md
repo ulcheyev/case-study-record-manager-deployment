@@ -112,9 +112,9 @@ Run:
 docker compose --env-file .env up --build -d
 ```
 
-#### Refreshing After Keycloak Changes
+#### Synchronizing Keycloak Changes
 The keycloak-config (Terraform) container is the source of truth for Keycloak configuration.
-Manual changes made in the Keycloak Admin UI are not supported to propagate and may be overwritten by Terraform.
+Manual changes made in the Keycloak Admin UI may be overwritten by Terraform configuration during the next application restart.
 
 ##### Client Secrets Update
 Client secrets `keycloak-secrets` are shared at runtime. The following services consume secrets:
