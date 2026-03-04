@@ -15,7 +15,7 @@ terraform init
 
 echo "Trying to import realm if it exists..."
 
-if terraform import module.realm.keycloak_realm.realm "$KC_REALM"; then
+if terraform import module.realms.keycloak_realm.realm "$KC_REALM"; then
   echo "Realm imported."
 else
   echo "Realm does not exist yet. It will be created."
