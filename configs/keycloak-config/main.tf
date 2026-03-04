@@ -14,7 +14,7 @@ provider "keycloak" {
   url       = var.kc_url
 }
 
-module "realm" {
+module "realms" {
   source = "./modules/realms"
 
   kc_realm                  = var.kc_realm
