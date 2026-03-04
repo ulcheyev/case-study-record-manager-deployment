@@ -4,13 +4,14 @@
 # Local configuration/deployment files
 *.iml
 .env
-docker-compose.local.yml
 
 # Terraform states
 *.tfstate
 *.tfstate.*
 .terraform/
 .terraform.lock.hcl
+configs/keycloak-config/core
 
 # Mac
 .DS_Store
+
