@@ -17,7 +17,7 @@ services:
       APP_ROOT_PATH: "${APP_ROOT_PATH:-}"
       RECORD_MANAGER_PATH: "${RECORD_MANAGER_PATH:-/record-manager}"
       ANNOTATOR_PATH: "${ANNOTATOR_PATH:-/annotator}"
-      MEDIA_CMS_URL: "${PUBLIC_ORIGIN:-http://localhost}:${MEDIA_CMS_HOST_PORT:-2080}"
+      MEDIA_CMS_URL: "${MEDIA_CMS_PUBLIC_ORIGIN:-http://localhost:${MEDIA_CMS_HOST_PORT:-2080}}"
       ANALYTICS_PATH: "${ANALYTICS_PATH:-/statistics}"
       INTERNAL_RECORD_MANAGER_SERVER_SERVICE: "${INTERNAL_RECORD_MANAGER_SERVER_SERVICE:-http://record-manager-server:8080}"
       INTERNAL_ANNOTATOR_SERVER_SERVICE: "${INTERNAL_ANNOTATOR_SERVER_SERVICE:-http://media-asset-annotator-server}"
@@ -122,9 +122,9 @@ services:
     environment:
       BASE_PATH: "${APP_ROOT_PATH:-}${ANNOTATOR_PATH:-/annotator}"
       APP_MODE: "prod"
-      MEDIA_ASSET_API_URL: "${MEDIA_ASSET_API_URL:-${PUBLIC_ORIGIN:-http://localhost:1235}${APP_ROOT_PATH:-}/services/annotator-server/asset}"
-      ANNOTATIONS_API_URL: "${ANNOTATIONS_API_URL:-${PUBLIC_ORIGIN:-http://localhost:1235}${APP_ROOT_PATH:-}/services/annotator-server/annotation/media}"
-      MEDIA_ASSETS_LIST_API_URL: "${MEDIA_ASSETS_LIST_API_URL:-${PUBLIC_ORIGIN:-http://localhost:1235}${APP_ROOT_PATH:-}/services/annotator-server/asset/adapter/playlist}"
+      MEDIA_ASSET_API_URL: "${MEDIA_ASSET_API_URL:-${PUBLIC_ORIGIN:-http://localhost:${INTERNAL_HOST_PORT:-1235}}${APP_ROOT_PATH:-}/services/annotator-server/asset}"
+      ANNOTATIONS_API_URL: "${ANNOTATIONS_API_URL:-${PUBLIC_ORIGIN:-http://localhost:${INTERNAL_HOST_PORT:-1235}}${APP_ROOT_PATH:-}/services/annotator-server/annotation/media}"
+      MEDIA_ASSETS_LIST_API_URL: "${MEDIA_ASSETS_LIST_API_URL:-${PUBLIC_ORIGIN:-http://localhost:${INTERNAL_HOST_PORT:-1235}}${APP_ROOT_PATH:-}/services/annotator-server/asset/adapter/playlist}"
 
   media-asset-annotator-server:
     image: manki1337/media-asset-annotator-server:latest
@@ -188,7 +188,7 @@ services:
       ENABLE_CELERY_SHORT: no
       ENABLE_CELERY_LONG: no
       ENABLE_MIGRATIONS: no
-      FRONTEND_HOST: ${PUBLIC_ORIGIN:-http://localhost}
+      FRONTEND_HOST: ${MEDIA_CMS_PUBLIC_ORIGIN:-http://localhost:${MEDIA_CMS_HOST_PORT:-2080}}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     depends_on:
