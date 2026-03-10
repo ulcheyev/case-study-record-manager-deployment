@@ -78,7 +78,7 @@ Then configure the following (⚠️ Important):
 
 The deployment supports two modes:
 
-- **Local development** (e.g. `http://localhost`)
+- **Local development** 
 - **Domain-based deployment** (`PUBLIC_ORIGIN` defined in `.env`)
 
 ---
