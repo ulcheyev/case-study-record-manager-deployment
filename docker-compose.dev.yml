@@ -17,7 +17,7 @@ services:
     environment:
       LOGGING_LEVEL_ROOT: "DEBUG"
       LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB: "TRACE"
-      CORS_ALLOWED_ORIGINS: "http://localhost:1235,http://localhost:5173,http://media-asset-annotator"
+      CORS_ALLOWED_ORIGINS: "*"
 
   # Expose MediaCMS on all interfaces for LAN access.
   # Transcoding is disabled to speed up development.
@@ -45,4 +45,4 @@ services:
     environment:
       LOGGING_LEVEL_ROOT: "DEBUG"
       LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB: "TRACE"
-      security.cors.allowedOrigins: "http://localhost:4173,http://localhost:5173,http://record-manager"
+      security.cors.allowedOrigins: "*"
