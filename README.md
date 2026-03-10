@@ -95,12 +95,12 @@ Use this mode when running the stack locally. The `docker-compose.dev.yml` overr
 - Binds ports on all interfaces (`0.0.0.0`) for LAN access
 - Disables OAuth2 authentication requirement
 - Enables verbose logging
-- Disables Celery workers (transcoding not needed)
+- Disables Celery workers
 - Exposes GraphDB port directly
 
 The `docker-compose.local-oauth.yml` override additionally:
-- Skips OIDC issuer verification (needed because the issuer URL seen by the browser differs from the internal Docker URL)
-- Disables secure cookies (required for HTTP)
+- Skips OIDC issuer verification
+- Disables secure cookies
 ```bash
 docker compose \
   -f docker-compose.yml \
