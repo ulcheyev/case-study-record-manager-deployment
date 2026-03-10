@@ -1,0 +1,11 @@
+services:
+  # nginx binds only to localhost — an external reverse proxy
+  nginx:
+    ports:
+      - "127.0.0.1:${INTERNAL_HOST_PORT:-1235}:80"
+
+  # MediaCMS is not sub-path capable, so it runs on its own port behind localhost.
+  # MEDIA_CMS_PUBLIC_ORIGIN must be set to a publicly reachable URL in .env.
+  mediacms:
+    ports:
+      - "127.0.0.1:${MEDIA_CMS_HOST_PORT:-2080}:80"

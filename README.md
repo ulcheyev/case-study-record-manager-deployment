@@ -78,38 +78,51 @@ Then configure the following (⚠️ Important):
 
 The deployment supports two modes:
 
-- **Local development (localhost)**
-- **Domain-based deployment (PUBLIC_ORIGIN defined)**
+- **Local development** (e.g. `http://localhost`)
+- **Domain-based deployment** (`PUBLIC_ORIGIN` defined in `.env`)
 
 ---
 
-#### 🔹 Local Development Mode
+> **Note:** Docker Compose merges port lists additively — ports cannot be overridden, only added.
+> For this reason, `nginx` and `mediacms` define no ports in the base `docker-compose.yml`.
+> Ports are defined exclusively in environment-specific override files to avoid binding conflicts.
 
-If the stack is running locally (e.g., `http://localhost`), you must apply the local override file.
+---
 
-This enables:
+#### 🔹 Local Development
 
-- Insecure OIDC issuer skip (for localhost)
-- Non-secure cookies (HTTP)
+Use this mode when running the stack locally. The `docker-compose.dev.yml` override:
+- Binds ports on all interfaces (`0.0.0.0`) for LAN access
+- Disables OAuth2 authentication requirement
+- Enables verbose logging
+- Disables Celery workers (transcoding not needed)
+- Exposes GraphDB port directly
 
-Run:
-
+The `docker-compose.local-oauth.yml` override additionally:
+- Skips OIDC issuer verification (needed because the issuer URL seen by the browser differs from the internal Docker URL)
+- Disables secure cookies (required for HTTP)
 ```bash
 docker compose \
   -f docker-compose.yml \
-  -f docker-compose.local.yml \
+  -f docker-compose.dev.yml \
+  -f docker-compose.local-oauth.yml \
   --env-file .env \
   up --build -d
 ```
 
+---
+
 #### 🔹 Domain-Based Deployment
 
-If running under a domain and `PUBLIC_ORIGIN` is properly defined in .env,
-do not apply the dev override file.
-
-Run:
+Use this mode when `PUBLIC_ORIGIN` is set to a publicly reachable domain in `.env`.
+The `docker-compose.prod.yml` override binds ports to `127.0.0.1` only — an external
+reverse proxy is expected to forward public traffic to the stack.
 ```bash
-docker compose --env-file .env up --build -d
+docker compose \
+  -f docker-compose.yml \
+  -f docker-compose.prod.yml \
+  --env-file .env \
+  up --build -d
 ```
 
 #### Synchronizing Keycloak Changes

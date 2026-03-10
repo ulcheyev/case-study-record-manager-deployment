@@ -3,8 +3,9 @@ services:
   nginx:
     image: nginx:latest
     container_name: ${RECORD_SET_NAME:-rm}-gateway
-    ports:
-      - "127.0.0.1:${INTERNAL_HOST_PORT:-1235}:80"
+    # Ports are not defined here.
+    expose:
+      - "80"
     restart: always
     depends_on:
       - record-manager
@@ -173,8 +174,9 @@ services:
     build: ./configs/mediacms
     image: ${RECORD_SET_NAME:-rm}-media-cms-web
     container_name: ${RECORD_SET_NAME:-rm}-media-cms-web
-    ports:
-      - '127.0.0.1:${MEDIA_CMS_HOST_PORT:-2080}:80'
+    # Ports are not defined here.
+    expose:
+      - "80"
     healthcheck:
       test: timeout 10s bash -c ':> /dev/tcp/127.0.0.1/80' || exit 1
       interval: 10s

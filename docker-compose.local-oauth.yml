@@ -1,0 +1,13 @@
+services:
+
+  # Allows oauth2-proxy inside Docker to reach services on the host machine
+  # (e.g. a locally running Keycloak on localhost) via the host-gateway alias.
+  # OIDC issuer verification is skipped because the issuer URL seen by the browser
+  # (http://localhost:...) differs from the internal Docker network URL.
+  # Cookie security is disabled since we're running over plain HTTP locally.
+  oauth2-proxy:
+    extra_hosts:
+      - "localhost:host-gateway"
+    environment:
+      OAUTH2_PROXY_INSECURE_OIDC_SKIP_ISSUER_VERIFICATION: "true"
+      OAUTH2_PROXY_COOKIE_SECURE: "false"
