@@ -1,6 +1,8 @@
 services:
 
   nginx:
+    ports:
+      - "${INTERNAL_HOST_PORT:-1235}:80"
     environment:
       NGINX_LOG_LEVEL: "debug"
       OAUTH2_PROXY_AUTH_REQUIRED: "false"
@@ -16,6 +18,8 @@ services:
       CORS_ALLOWED_ORIGINS: "http://localhost:1235,http://localhost:5173,http://media-asset-annotator"
 
   mediacms:
+    ports:
+      - '${MEDIA_CMS_HOST_PORT:-2080}:80'
     environment:
       DEBUG: "True"
       DO_NOT_TRANSCODE_VIDEO: "True"
