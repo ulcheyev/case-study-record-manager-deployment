@@ -1,10 +1,14 @@
 services:
 
+  # Expose gateway on all interfaces for LAN access.
+  # Auth is disabled to simplify development.
   nginx:
+    ports:
+      - "0.0.0.0:${INTERNAL_HOST_PORT:-1235}:80"
     environment:
       NGINX_LOG_LEVEL: "debug"
       OAUTH2_PROXY_AUTH_REQUIRED: "false"
-  
+
   oauth2-proxy:
     environment:
       OAUTH2_PROXY_LOG_LEVEL: "debug"
@@ -13,13 +17,18 @@ services:
     environment:
       LOGGING_LEVEL_ROOT: "DEBUG"
       LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB: "TRACE"
-      CORS_ALLOWED_ORIGINS: "http://localhost:1235,http://localhost:5173,http://media-asset-annotator"
+      CORS_ALLOWED_ORIGINS: "http://localhost:1235,http://localhost:5173,http://media-asset-annotator,${CORS_ALLOWED_ORIGINS_ANNOTATOR_SERVER:-}"
 
+  # Expose MediaCMS on all interfaces for LAN access.
+  # Transcoding is disabled to speed up development.
   mediacms:
+    ports:
+      - "0.0.0.0:${MEDIA_CMS_HOST_PORT:-2080}:80"
     environment:
       DEBUG: "True"
       DO_NOT_TRANSCODE_VIDEO: "True"
 
+  # Celery workers are not needed in dev since transcoding is disabled.
   celery-worker:
     deploy:
       replicas: 0
@@ -27,14 +36,13 @@ services:
   celery-beat:
     deploy:
       replicas: 0
-      
+
   db-server:
     ports:
-        - "7200:7200"
+      - "7200:7200"
 
   record-manager-server:
     environment:
       LOGGING_LEVEL_ROOT: "DEBUG"
       LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB: "TRACE"
-      security.cors.allowedOrigins: "http://localhost:4173,http://localhost:5173,http://record-manager"
-
+      security.cors.allowedOrigins: "http://localhost:4173,http://localhost:5173,http://record-manager,${CORS_ALLOWED_ORIGINS_RECORD_MANAGER_SERVER:-}"
