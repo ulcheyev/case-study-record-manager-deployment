@@ -2,7 +2,7 @@ services:
 
   nginx:
     ports:
-      - "${INTERNAL_HOST_PORT:-1235}:80"
+      - "0.0.0.0:${INTERNAL_HOST_PORT:-1235}:80"
     environment:
       NGINX_LOG_LEVEL: "debug"
       OAUTH2_PROXY_AUTH_REQUIRED: "false"
@@ -19,7 +19,7 @@ services:
 
   mediacms:
     ports:
-      - '${MEDIA_CMS_HOST_PORT:-2080}:80'
+      - '0.0.0.0:${MEDIA_CMS_HOST_PORT:-2080}:80'
     environment:
       DEBUG: "True"
       DO_NOT_TRANSCODE_VIDEO: "True"
