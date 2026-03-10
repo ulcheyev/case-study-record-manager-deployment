@@ -3,8 +3,9 @@ services:
   nginx:
     image: nginx:latest
     container_name: ${RECORD_SET_NAME:-rm}-gateway
-    ports:
-      - "${INTERNAL_HOST_PORT:-1235}:80"
+    # Ports are not defined here.
+    expose:
+      - "80"
     restart: always
     depends_on:
       - record-manager
@@ -17,17 +18,16 @@ services:
       APP_ROOT_PATH: "${APP_ROOT_PATH:-}"
       RECORD_MANAGER_PATH: "${RECORD_MANAGER_PATH:-/record-manager}"
       ANNOTATOR_PATH: "${ANNOTATOR_PATH:-/annotator}"
-      MEDIA_CMS_URL: "${PUBLIC_ORIGIN:-http://localhost}:${MEDIA_CMS_HOST_PORT:-2080}"
+      MEDIA_CMS_URL: "${MEDIA_CMS_PUBLIC_ORIGIN:-http://localhost:${MEDIA_CMS_HOST_PORT:-2080}}"
       ANALYTICS_PATH: "${ANALYTICS_PATH:-/statistics}"
       INTERNAL_RECORD_MANAGER_SERVER_SERVICE: "${INTERNAL_RECORD_MANAGER_SERVER_SERVICE:-http://record-manager-server:8080}"
       INTERNAL_ANNOTATOR_SERVER_SERVICE: "${INTERNAL_ANNOTATOR_SERVER_SERVICE:-http://media-asset-annotator-server}"
       INTERNAL_SPIPES_ENGINE_SERVICE: "${INTERNAL_SPIPES_ENGINE_SERVICE:-http://s-pipes-engine:8080}"
+      OAUTH2_PROXY_AUTH_REQUIRED: "true"
     volumes:
       - ./configs/nginx/nginx.conf:/etc/nginx/templates/nginx.conf.template:ro
-      - ./configs/nginx/error.html:/usr/share/nginx/html/error.html:ro
-      - ./configs/nginx/index.html:/usr/share/nginx/html/index.html:ro
-      - ./configs/nginx/images:/usr/share/nginx/html/images:ro
-      - ./configs/nginx/statistics.html:/usr/share/nginx/html/statistics.html:ro
+      - ./configs/nginx/conf.d:/etc/nginx/templates/conf.d:ro
+      - ./configs/nginx/static:/usr/share/nginx/html
 
   oauth2-proxy:
     build:
@@ -54,7 +54,6 @@ services:
       OAUTH2_PROXY_HTTP_ADDRESS: "0.0.0.0:4180"
       OAUTH2_PROXY_REVERSE_PROXY: "true"
       OAUTH2_PROXY_SET_XAUTHREQUEST: "true"
-      OAUTH2_PROXY_LOG_LEVEL: debug
       OAUTH2_PROXY_SESSION_STORE_TYPE: redis
       OAUTH2_PROXY_REDIS_CONNECTION_URL: redis://redis:6379
       OAUTH2_PROXY_OIDC_LOGOUT_URL: "${PUBLIC_ORIGIN:-http://localhost:${INTERNAL_HOST_PORT:-1235}}${APP_ROOT_PATH:-}/services/auth/realms/record-manager/protocol/openid-connect/logout"
@@ -124,9 +123,9 @@ services:
     environment:
       BASE_PATH: "${APP_ROOT_PATH:-}${ANNOTATOR_PATH:-/annotator}"
       APP_MODE: "prod"
-      ANNOTATIONS_API_URL: "${ANNOTATIONS_API_URL:-${PUBLIC_ORIGIN:-http://localhost:1235}${APP_ROOT_PATH:-}/services/annotator-server/annotation/media}"
-      MEDIA_ASSET_API_URL: "${MEDIA_ASSET_API_URL:-${PUBLIC_ORIGIN:-http://localhost:1235}${APP_ROOT_PATH:-}/services/annotator-server/asset}"
-      MEDIA_ASSETS_LIST_API_URL: "${MEDIA_ASSETS_LIST_API_URL:-${PUBLIC_ORIGIN:-http://localhost:1235}${APP_ROOT_PATH:-}/services/annotator-server/asset/adapter/playlist}"
+      MEDIA_ASSET_API_URL: "${MEDIA_ASSET_API_URL:-${PUBLIC_ORIGIN:-http://localhost:${INTERNAL_HOST_PORT:-1235}}${APP_ROOT_PATH:-}/services/annotator-server/asset}"
+      ANNOTATIONS_API_URL: "${ANNOTATIONS_API_URL:-${PUBLIC_ORIGIN:-http://localhost:${INTERNAL_HOST_PORT:-1235}}${APP_ROOT_PATH:-}/services/annotator-server/annotation/media}"
+      MEDIA_ASSETS_LIST_API_URL: "${MEDIA_ASSETS_LIST_API_URL:-${PUBLIC_ORIGIN:-http://localhost:${INTERNAL_HOST_PORT:-1235}}${APP_ROOT_PATH:-}/services/annotator-server/asset/adapter/playlist}"
 
   media-asset-annotator-server:
     image: manki1337/media-asset-annotator-server:latest
@@ -139,7 +138,7 @@ services:
       SERVER_PORT: 80
       SERVER_CONTEXT_PATH: "/annotator-server"
       MEDIA_CMS_INTERNAL_BASE_URL: "http://mediacms"
-      MEDIA_CMS_PUBLIC_BASE_URL: "${PUBLIC_ORIGIN:-http://localhost}:${MEDIA_CMS_HOST_PORT:-2080}"
+      MEDIA_CMS_PUBLIC_BASE_URL: "${MEDIA_CMS_PUBLIC_ORIGIN:-http://localhost:${MEDIA_CMS_HOST_PORT:-2080}}"
       MEDIA_CMS_API_BASE: "${MEDIA_CMS_API_BASE:-/api/v1}"
       REPOSITORY_URL: "http://db-server:7200/repositories/record-manager-app"
       DB_USERNAME: "${GDB_USERNAME:-}"
@@ -147,7 +146,8 @@ services:
       CORS_ALLOWED_ORIGINS: "${PUBLIC_ORIGIN:-http://media-asset-annotator,http://localhost:${INTERNAL_HOST_PORT:-1235}}"
 
   migrations:
-    image: mediacms/mediacms:7.2
+    build: ./configs/mediacms
+    image: ${RECORD_SET_NAME:-rm}-media-cms-web
     container_name: ${RECORD_SET_NAME:-rm}-media-cms-migration
     environment:
       ENABLE_UWSGI: no
@@ -167,12 +167,16 @@ services:
       - redis
       - postgres
     restart: on-failure
+    volumes:
+      - keycloak-secrets:/secrets
 
   mediacms:
-    image: mediacms/mediacms:7.2
-    ports:
-      - '${MEDIA_CMS_HOST_PORT-2080}:80'
+    build: ./configs/mediacms
+    image: ${RECORD_SET_NAME:-rm}-media-cms-web
     container_name: ${RECORD_SET_NAME:-rm}-media-cms-web
+    # Ports are not defined here.
+    expose:
+      - "80"
     healthcheck:
       test: timeout 10s bash -c ':> /dev/tcp/127.0.0.1/80' || exit 1
       interval: 10s
@@ -186,7 +190,7 @@ services:
       ENABLE_CELERY_SHORT: no
       ENABLE_CELERY_LONG: no
       ENABLE_MIGRATIONS: no
-      FRONTEND_HOST: ${PUBLIC_ORIGIN:-http://localhost}
+      FRONTEND_HOST: ${MEDIA_CMS_PUBLIC_ORIGIN:-http://localhost:${MEDIA_CMS_HOST_PORT:-2080}}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     depends_on:
@@ -195,14 +199,12 @@ services:
       - keycloak-config
     restart: on-failure
     volumes:
-      - ./configs/mediacms/local_settings.py:/home/mediacms.io/mediacms/deploy/docker/local_settings.py
-      - ./configs/mediacms/oidc_adapter.py:/home/mediacms.io/mediacms/deploy/docker/oidc_adapter.py
-      - ./configs/mediacms/nginx.conf:/home/mediacms.io/mediacms/deploy/docker/nginx_http_only.conf
-      - ./configs/mediacms/images/userlogos:/home/mediacms.io/mediacms/media_files/userlogos
+      - mediacms-media:/home/mediacms.io/mediacms/media_files
       - keycloak-secrets:/secrets
 
-  celery_beat:
-    image: mediacms/mediacms:7.2
+  celery-beat:
+    build: ./configs/mediacms
+    image: ${RECORD_SET_NAME:-rm}-media-cms-web
     container_name: ${RECORD_SET_NAME:-rm}-media-cms-beat
     environment:
       ENABLE_UWSGI: no
@@ -210,12 +212,18 @@ services:
       ENABLE_CELERY_SHORT: no
       ENABLE_CELERY_LONG: no
       ENABLE_MIGRATIONS: no
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     depends_on:
       - redis
     restart: on-failure
-
-  celery_worker:
-    image: mediacms/mediacms:7.2
+    volumes:
+      - mediacms-media:/home/mediacms.io/mediacms/media_files
+      - keycloak-secrets:/secrets
+  
+  celery-worker:
+    build: ./configs/mediacms
+    image: ${RECORD_SET_NAME:-rm}-media-cms-web
     container_name: ${RECORD_SET_NAME:-rm}-media-cms-worker
     deploy:
       replicas: 1
@@ -224,17 +232,25 @@ services:
       ENABLE_NGINX: no
       ENABLE_CELERY_BEAT: no
       ENABLE_MIGRATIONS: no
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     depends_on:
       - migrations
     restart: on-failure
+    volumes:
+      - mediacms-media:/home/mediacms.io/mediacms/media_files
+      - keycloak-secrets:/secrets  
 
   redis:
     image: redis
     container_name: ${RECORD_SET_NAME:-rm}-redis
     hostname: norish-redis
+    command: redis-server --appendonly yes
     healthcheck:
       test: [ 'CMD-SHELL', 'redis-cli ping || exit 1' ]
     restart: on-failure:5
+    volumes:
+      - redis-data:/data
 
   db-server:
     build:
@@ -264,14 +280,13 @@ services:
     image: ghcr.io/kbss-cvut/keycloak-graphdb-user-replicator/keycloak-graphdb:latest
     container_name: ${RECORD_SET_NAME:-rm}-auth-server
     command:
-      - start --import-realm --features="token-exchange,admin-fine-grained-authz"
+      - start --features="token-exchange,admin-fine-grained-authz"
     restart: on-failure:5
     expose:
       - "8080"
     depends_on:
       - postgres
     environment:
-      KC_IMPORT: realm-export.json
       KC_HOSTNAME_URL: "${PUBLIC_ORIGIN:-http://localhost:${INTERNAL_HOST_PORT:-1235}}${APP_ROOT_PATH:-}/services/auth/"
       KC_HOSTNAME_ADMIN_URL: "${PUBLIC_ORIGIN:-http://localhost:${INTERNAL_HOST_PORT:-1235}}${APP_ROOT_PATH:-}/services/auth/"
       KC_HTTP_ENABLED: true
@@ -298,7 +313,6 @@ services:
       REALM_ID: "record-manager"
     volumes:
       - auth-server:/opt/keycloak/data
-      - ./configs/auth-server:/opt/keycloak/data/import
 
   keycloak-config:
     image: hashicorp/terraform:light
@@ -311,9 +325,9 @@ services:
       TF_VAR_kc_admin_user: "${KC_ADMIN_USER}"
       TF_VAR_kc_admin_password: "${KC_ADMIN_PASSWORD}"
       TF_VAR_kc_realm: "${KC_REALM:-record-manager}"
-      TF_VAR_kc_url: "http://auth-server:8080/"
+      TF_VAR_kc_url: "http://auth-server:8080"
       TF_VAR_kc_access_token_lifespan: "${KC_ACCESS_TOKEN_LIFESPAN:-5m}"
-      TF_VAR_mediacms_base_url: "${PUBLIC_ORIGIN:-http://localhost}:${MEDIA_CMS_HOST_PORT:-2080}"
+      TF_VAR_mediacms_base_url: "${MEDIA_CMS_PUBLIC_ORIGIN:-http://localhost:${MEDIA_CMS_HOST_PORT:-2080}}"
       TF_VAR_public_origin: "${PUBLIC_ORIGIN:-http://localhost:${INTERNAL_HOST_PORT:-1235}}"
       TF_VAR_enable_google_login: ${ENABLE_GOOGLE_LOGIN:-false}
       TF_VAR_google_client_id: ${GOOGLE_CLIENT_ID:-}
@@ -327,3 +341,5 @@ volumes:
   auth-server:
   postgres:
   keycloak-secrets:
+  mediacms-media:
+  redis-data:
