@@ -31,6 +31,7 @@ module "clients" {
 
 module "roles" {
   source   = "./modules/roles"
+
   realm_id = module.realms.realm_id
 }
 
