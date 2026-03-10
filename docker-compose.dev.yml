@@ -1,6 +1,6 @@
 services:
 
-  # Expose gateway on all interfaces so it's reachable from other devices on the LAN.
+  # Expose gateway on all interfaces for LAN access.
   # Auth is disabled to simplify development.
   nginx:
     ports:

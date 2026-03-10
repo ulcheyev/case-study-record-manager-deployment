@@ -1,5 +1,5 @@
 services:
-  # nginx binds only to localhost — an external reverse proxy
+  # nginx binds only to localhost — an external reverse proxy required.
   nginx:
     ports:
       - "127.0.0.1:${INTERNAL_HOST_PORT:-1235}:80"
