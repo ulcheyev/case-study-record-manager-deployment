@@ -325,7 +325,7 @@ services:
       TF_VAR_kc_realm: "${KC_REALM:-record-manager}"
       TF_VAR_kc_url: "http://auth-server:8080"
       TF_VAR_kc_access_token_lifespan: "${KC_ACCESS_TOKEN_LIFESPAN:-5m}"
-      TF_VAR_mediacms_base_url: "${PUBLIC_ORIGIN:-http://localhost}:${MEDIA_CMS_HOST_PORT:-2080}"
+      TF_VAR_mediacms_base_url: "${MEDIA_CMS_PUBLIC_ORIGIN:-http://localhost:${MEDIA_CMS_HOST_PORT:-2080}}"
       TF_VAR_public_origin: "${PUBLIC_ORIGIN:-http://localhost:${INTERNAL_HOST_PORT:-1235}}"
       TF_VAR_enable_google_login: ${ENABLE_GOOGLE_LOGIN:-false}
       TF_VAR_google_client_id: ${GOOGLE_CLIENT_ID:-}
