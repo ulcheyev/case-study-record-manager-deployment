@@ -1,7 +1,7 @@
 resource "keycloak_oidc_identity_provider" "google" {
-  count = var.enable_google_login ? 1 : 0
+  count = var.enable_google ? 1 : 0
 
-  realm = keycloak_realm.realm.realm
+  realm = var.realm_id
 
   alias        = "google"
   display_name = "Google"

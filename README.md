@@ -8,12 +8,14 @@ The deployment is based on:
 ---
 ## 📑 Table of Contents
 
-1. [Deployment Setup](#2-deployment-setup)
-  - [1.1 Authentication Configuration](#21-authentication-configuration)
-  - [1.2 MediaCMS Configuration](#22-mediacms-configuration)
-  - [1.3 Environment Configuration](#23-environment-configuration)
-  - [1.4 Build and Start Services](#24-build-and-start-services)
-2. [Role and Group Management](#3-role-and-group-management)
+1. [Deployment Setup](#1-deployment-setup)
+  - [1.1 Authentication Configuration](#11-authentication-configuration)
+  - [1.2 Scaling Configuration](#12-scaling-configuration)
+  - [1.3 MediaCMS Configuration](#13-mediacms-configuration)
+  - [1.4 Environment Configuration](#14-environment-configuration)
+  - [1.5 Build and Start Services](#15-build-and-start-services)
+2. [Role and Group Management](#2-role-and-group-management)
+
 ---
 
 ## 1. Deployment Setup
@@ -23,7 +25,7 @@ The deployment is based on:
 Before starting the deployment, configure authentication.
 
 Refer to:
-- 🔗 [Authentication Docs](/AUTH.md)
+- 🔗 [Authentication Docs](./docs/AUTH.md)
 
 Authentication is based on:
 - **Keycloak realm**: `record-manager`
@@ -34,7 +36,11 @@ Authentication is based on:
 
 ---
 
-### 1.2 MediaCMS Configuration
+### 1.2 Scaling Configuration
+Refer to:
+- 🔗 [Scaling Docs](./docs/SCALE.md)
+
+### 1.3 MediaCMS Configuration
 
 The default configuration provides fundamental access.
 
@@ -45,10 +51,11 @@ For advanced configuration, refer to:
 
 **Important**:
 - Users must have appropriate roles assigned in Keycloak.
+- Without correct role assignment, access will be denied.
 
 ---
 
-### 1.3 Environment Configuration
+### 1.4 Environment Configuration
 
 Configure environment variables before starting the deployment.
 
@@ -67,62 +74,73 @@ Then configure the following (⚠️ Important):
 
 ---
 
-### 1.4 Build and Start Services
+### 1.5 Build and Start Services
 
 The deployment supports two modes:
 
-- **Local development (localhost)**
-- **Domain-based deployment (PUBLIC_ORIGIN defined)**
+- **Local development** 
+- **Domain-based deployment** (`PUBLIC_ORIGIN` defined in `.env`)
 
 ---
 
-#### 🔹 Local Development Mode
+> **Note:** Docker Compose merges port lists additively — ports cannot be overridden, only added.
+> For this reason, `nginx` and `mediacms` define no ports in the base `docker-compose.yml`.
+> Ports are defined exclusively in environment-specific override files to avoid binding conflicts.
 
-If the stack is running locally (e.g., `http://localhost`), you must apply the development override file.
+---
 
-This enables:
+#### 🔹 Local Development
 
-- Insecure OIDC issuer skip (for localhost)
-- Non-secure cookies (HTTP)
+Use this mode when running the stack locally. The `docker-compose.dev.yml` override:
+- Binds ports on all interfaces (`0.0.0.0`) for LAN access
+- Disables OAuth2 authentication requirement
+- Enables verbose logging
+- Disables Celery workers
+- Exposes GraphDB port directly
 
-Run:
-
+The `docker-compose.local-oauth.yml` override additionally:
+- Skips OIDC issuer verification
+- Disables secure cookies
 ```bash
 docker compose \
   -f docker-compose.yml \
   -f docker-compose.dev.yml \
+  -f docker-compose.local-oauth.yml \
   --env-file .env \
   up --build -d
 ```
 
+---
+
 #### 🔹 Domain-Based Deployment
 
-If running under a domain and `PUBLIC_ORIGIN` is properly defined in .env,
-do not apply the dev override file.
-
-Run:
+Use this mode when `PUBLIC_ORIGIN` is set to a publicly reachable domain in `.env`.
+The `docker-compose.prod.yml` override binds ports to `127.0.0.1` only — an external
+reverse proxy is expected to forward public traffic to the stack.
 ```bash
-docker compose --env-file .env up --build -d
+docker compose \
+  -f docker-compose.yml \
+  -f docker-compose.prod.yml \
+  --env-file .env \
+  up --build -d
 ```
 
-#### Rebuilding After Keycloak Changes
+#### Synchronizing Keycloak Changes
+The keycloak-config (Terraform) container is the source of truth for Keycloak configuration.
+Manual changes made in the Keycloak Admin UI may be overwritten by Terraform configuration during the next application restart.
 
-If the configuration was changed via the Keycloak configuration container at runtime, the whole stack must be rebuilt.
+##### Client Secrets Update
+Client secrets `keycloak-secrets` are shared at runtime. The following services consume secrets:
+- OAuth2 Proxy (Annotator authentication)
+- MediaCMS
 
-1. Stop and remove volumes:
-   ```bash
-   docker compose down -v
-   ```
-
-2. Rebuild and restart:
-   ```bash
-   docker compose --env-file .env up --build -d
-   ```
-
-- Updated client IDs are injected
-- Updated secrets are propagated
-- Updated issuer URLs are validated
-- OAuth2 proxy configuration remains consistent
+If a client secret is modified manually in the Keycloak UI it is needed to regenerate and synchronize the secrets. Re-run the `keycloak-config` container and restart the dependent services:
+```bash
+docker compose down keycloak-config oauth2-proxy mediacms nginx
+docker volume rm <project>_keycloak-secrets
+docker compose --env-file .env up -d keycloak-config oauth2-proxy mediacms nginx
+```
+In order to resolve newly assigned IP addresses after restart, gateway need to be restarted too.
 
 ---
 
@@ -131,7 +149,7 @@ If the configuration was changed via the Keycloak configuration container at run
 - Roles are defined at the realm level and grouped via Terraform.
 - Users must 
   - be assigned to a group or
-  - roles must be assigned to users to gain access to services.
+  - roles must be assigned to users to gain access to services
 - Each group contains a predefined set of realm roles.
 
 

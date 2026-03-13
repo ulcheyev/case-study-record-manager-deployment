@@ -41,9 +41,12 @@ variable "enable_google_login" {
 
 variable "google_client_id" {
   type = string
+  default = ""
 }
 
 variable "google_client_secret" {
   type      = string
   sensitive = true
+  default = ""
 }
+

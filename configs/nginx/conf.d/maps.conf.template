@@ -1,0 +1,21 @@
+map $status $status_text {
+    400 'Bad Request';
+    401 'Unauthorized';
+    403 'Forbidden';
+    404 'Not Found';
+    405 'Method Not Allowed';
+    406 'Not Acceptable';
+    413 'Payload Too Large';
+    414 'URI Too Long';
+    431 'Request Header Fields Too Large';
+    500 'Internal Server Error';
+    501 'Not Implemented';
+    502 'Bad Gateway';
+    503 'Service Unavailable';
+    504 'Gateway Timeout';
+}
+
+map ${OAUTH2_PROXY_AUTH_REQUIRED} $auth_enabled {
+    "true" 1;
+    "false" 0;
+}

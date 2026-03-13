@@ -9,13 +9,7 @@ Google login can be enabled via environment configuration and is automatically c
 
 ## 1.1 Create Google OAuth Credentials
 
-Detailed guide: [Google Api Guide for OAuth](https://support.google.com/googleapi/answer/6158849?hl=en)
-
-You will receive:
-
-- **Client ID**
-- **Client Secret**
----
+Detailed guide: [Google Api Guide for Manage OAuth Clients](https://support.google.com/cloud/answer/15549257?sjid=13971690791208954820-EU)
 
 ## 1.2 Configure Redirect URI
 
@@ -28,6 +22,10 @@ Important ⚠️:
 - The redirect URI must match exactly.
 - ⚠️ If running on a domain, replace `localhost:1235` with your domain.
 
+You will receive:
+
+- **Client ID**
+- **Client Secret**
 ---
 
 ## 1.3 Environment Variables
@@ -48,7 +46,7 @@ ENABLE_GOOGLE_LOGIN=false
 # 2. Microsoft Azure Authentication Setup
 Microsoft login can be configured similarly to Google, but in this deployment it is not automatically provisioned via Terraform.
 It must be configured manually in the Keycloak Admin Console. Follow:
-- [Official Microsoft Guide](https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app).
+- [Official Microsoft Guide](https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app)
 - [Keycloak documentation for identity brokers](https://www.keycloak.org/docs/latest/server_admin/index.html#_identity_broker)
 
 
