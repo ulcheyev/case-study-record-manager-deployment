@@ -111,6 +111,8 @@ services:
     expose:
       - "80"
     restart: always
+#    depends_on:
+#      - record-manager-statistics-server
     environment:
       RM_STATISTICS_API_URL: "${PUBLIC_ORIGIN:-http://localhost:${INTERNAL_HOST_PORT:-1235}}${APP_ROOT_PATH:-}/services/statistics-server"
       RM_STATISTICS_AUTH_URL: "${PUBLIC_ORIGIN:-http://localhost:${INTERNAL_HOST_PORT:-1235}}${APP_ROOT_PATH:-}/services/auth/realms/record-manager"

@@ -54,9 +54,21 @@ server {
         return 302 ${APP_ORIGIN}${APP_ROOT_PATH}${ANNOTATOR_PATH}/;
     }
 
+    location = ${ANALYTICS_PATH} {
+        return 302 ${APP_ORIGIN}${APP_ROOT_PATH}${ANALYTICS_PATH}/;
+    }
+
     # ----------------------------
     # Frontend Applications
     # ----------------------------
+
+    location ${RECORD_MANAGER_PATH}/ {
+        proxy_pass http://record-manager/;
+    }
+
+    location ${ANALYTICS_PATH}/ {
+        proxy_pass http://record-manager-statistics/;
+    }
 
     location ${ANNOTATOR_PATH}/ {
         auth_request /_auth;
@@ -64,9 +76,7 @@ server {
         proxy_pass http://media-asset-annotator/;
     }
 
-    location ${RECORD_MANAGER_PATH}/ {
-        proxy_pass http://record-manager/;
-    }
+
 
     # ----------------------------
     # Backend Services
