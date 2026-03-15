@@ -95,15 +95,15 @@ A `Makefile` is provided to simplify running common compose combinations.
 make help
 ```
 
-| Target | Description |
-|--------|-------------|
-| `make dev` | Local dev stack (no auth) |
+| Target           | Description                     |
+|------------------|---------------------------------|
+| `make dev`       | Local dev stack (no auth)       |
 | `make dev-oauth` | Local dev with Keycloak on host |
-| `make dev-rc` | Local dev with RC images |
-| `make prod` | Production deployment |
-| `make down` | Stop all services |
-| `make logs` | Tail logs |
-| `make ps` | Show running containers |
+| `make dev-rm`    | Local dev with RM images        |
+| `make prod`      | Production deployment           |
+| `make down`      | Stop all services               |
+| `make logs`      | Tail logs                       |
+| `make ps`        | Show running containers         |
 
 ---
 
