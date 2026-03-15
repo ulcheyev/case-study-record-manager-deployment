@@ -13,6 +13,7 @@ services:
       - s-pipes-engine
       - db-server
       - auth-server
+      - mediacms
       - record-manager-statistics
       - media-asset-annotator
       - media-asset-annotator-server
