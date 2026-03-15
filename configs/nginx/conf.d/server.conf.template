@@ -77,7 +77,6 @@ server {
     }
 
 
-
     # ----------------------------
     # Backend Services
     # ----------------------------
@@ -138,11 +137,6 @@ server {
     # ----------------------------
     # Static / Misc
     # ----------------------------
-
-    location ${ANALYTICS_PATH} {
-        try_files /statistics.html =404;
-        root /usr/share/nginx/html;
-    }
 
     location /health-check {
         return 200;
