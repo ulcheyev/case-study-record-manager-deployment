@@ -2,7 +2,7 @@ ENV_FILE = --env-file .env
 BASE     = -f docker-compose.yml
 DEV      = $(BASE) -f docker-compose.dev.yml
 PROD     = $(BASE) -f docker-compose.prod.yml
-RC_DISTRO = -f docker-compose.ulcheyev-rc-distro.yml
+RC_DISTRO = -f docker-compose.ulcheyev-rm-distro.yml
 
 # ── Environments ────────────────────────────────────────────────
 
