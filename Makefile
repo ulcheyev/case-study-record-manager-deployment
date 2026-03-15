@@ -35,7 +35,7 @@ help:
 	@echo ""
 	@echo "  dev            Local dev stack (no auth)"
 	@echo "  dev-oauth      Local dev with Keycloak on host"
-	@echo "  dev-rc         Local dev with RC images"
+	@echo "  dev-rc         Local dev with dev distro images"
 	@echo "  prod           Production deployment"
 	@echo "  down           Stop all services"
 	@echo "  logs           Tail logs"
