@@ -27,6 +27,7 @@ services:
       MEDIA_CMS_URL: "${MEDIA_CMS_PUBLIC_ORIGIN:-http://localhost:${MEDIA_CMS_HOST_PORT:-2080}}"
       ANALYTICS_PATH: "${ANALYTICS_PATH:-/statistics}"
       INTERNAL_RECORD_MANAGER_SERVER_SERVICE: "${INTERNAL_RECORD_MANAGER_SERVER_SERVICE:-http://record-manager-server:8080}"
+      INTERNAL_RECORD_MANAGER_STATISTICS_SERVER_SERVICE: "${INTERNAL_RECORD_MANAGER_STATISTICS_SERVER_SERVICE:-http://record-manager-statistics-server:8080}"
       INTERNAL_ANNOTATOR_SERVER_SERVICE: "${INTERNAL_ANNOTATOR_SERVER_SERVICE:-http://media-asset-annotator-server}"
       INTERNAL_SPIPES_ENGINE_SERVICE: "${INTERNAL_SPIPES_ENGINE_SERVICE:-http://s-pipes-engine:8080}"
       OAUTH2_PROXY_AUTH_REQUIRED: "true"
@@ -133,7 +134,7 @@ services:
       - record-manager-server
     environment:
       SPRING_ACTIVE_PROFILE: "${STATISTICS_SERVER_PROFILE:-prod}"
-      SERVER_CONTEXT_PATH: "${PUBLIC_ORIGIN:-http://localhost:${INTERNAL_HOST_PORT:-1235}}${APP_ROOT_PATH:-}${STATISTICS_SERVER_PATH:-/statistics-server}"
+      SERVER_CONTEXT_PATH: "/statistics-server"
       REPOSITORY_URL: "http://db-server:7200/repositories/record-manager-app"
       DB_USERNAME: "${GDB_USERNAME:-}"
       DB_PASSWORD: "${GDB_PASSWORD:-}"
