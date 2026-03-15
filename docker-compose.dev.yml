@@ -20,6 +20,12 @@ services:
       LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB: "TRACE"
       CORS_ALLOWED_ORIGINS: "http://localhost:1235,http://localhost:5173,http://media-asset-annotator,${CORS_ALLOWED_ORIGINS_ANNOTATOR_SERVER:-}"
 
+  record-manager-statistics-server:
+    environment:
+      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB: "TRACE"
+      SPRING_ACTIVE_PROFILE: "demo"
+      CORS_ALLOWED_ORIGINS: "http://localhost:1235,http://localhost:5173,http://record-manager-statistics,${CORS_ALLOWED_ORIGINS_STATISTICS_SERVER:-}"
+
   # Expose MediaCMS on all interfaces for LAN access.
   # Transcoding is disabled to speed up development.
   mediacms:
