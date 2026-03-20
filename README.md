@@ -88,6 +88,24 @@ The deployment supports two modes:
 > Ports are defined exclusively in environment-specific override files to avoid binding conflicts.
 
 ---
+#### 🔹 Quick start with Make
+
+A `Makefile` is provided to simplify running common compose combinations.
+```bash
+make help
+```
+
+| Target           | Description                     |
+|------------------|---------------------------------|
+| `make dev`       | Local dev stack (no auth)       |
+| `make dev-oauth` | Local dev with Keycloak on host |
+| `make dev-rm`    | Local dev with RM images        |
+| `make prod`      | Production deployment           |
+| `make down`      | Stop all services               |
+| `make logs`      | Tail logs                       |
+| `make ps`        | Show running containers         |
+
+---
 
 #### 🔹 Local Development
 
@@ -101,6 +119,11 @@ Use this mode when running the stack locally. The `docker-compose.dev.yml` overr
 The `docker-compose.local-oauth.yml` override additionally:
 - Skips OIDC issuer verification
 - Disables secure cookies
+```bash
+make dev-oauth
+```
+
+Or manually:
 ```bash
 docker compose \
   -f docker-compose.yml \
@@ -117,6 +140,11 @@ docker compose \
 Use this mode when `PUBLIC_ORIGIN` is set to a publicly reachable domain in `.env`.
 The `docker-compose.prod.yml` override binds ports to `127.0.0.1` only — an external
 reverse proxy is expected to forward public traffic to the stack.
+```bash
+make prod
+```
+
+Or manually:
 ```bash
 docker compose \
   -f docker-compose.yml \
