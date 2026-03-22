@@ -140,18 +140,65 @@ Once storage is in MinIO or S3, remove the `mediacms-media` volume mount from `m
 
 ### Step 4 — Scale mediacms instances
 
-Deploy `mediacms web` instances on multiple nodes.
+Deploy `mediacms-web` instances on multiple nodes.
 
-Each node should run `mediacms web` instance (nginx + Django) and be connected to the same `shared services`:
+Each node should run `mediacms-web` instance (nginx + Django) and be connected to the same `shared services`:
 - Object storage (S3 / MinIO)
 - Redis
 - Postgres
 - Keycloak
 
+All mediacms services are configured through the [local_settings.py](../configs/mediacms/local_settings.py) file.
+The full list of available Django settings can be found in the [official documentation](https://docs.djangoproject.com/en/6.0/ref/settings/).  
+
+
+These environment variables can be used to deploy the `mediacms-web` instance:
+```yaml
+services:
+  mediacms-web:
+    image: mediacms:latest
+    ports:
+      - "80:80"
+    environment:
+      ENABLE_UWSGI: "yes"
+      ENABLE_NGINX: "yes"
+      ENABLE_CELERY_BEAT: "no"
+      ENABLE_CELERY_SHORT: "no"
+      ENABLE_CELERY_LONG: "no"
+      ENABLE_MIGRATIONS: "no"
+```
+
 #### Background services
 In addition to web instances, the following services must be deployed and connected to the same `shared services`:
 - **At least one `celery-worker`**
 - **Exactly one `celery-beat`**
+
+These environment variables can be used to deploy the `celery-worker` instance:
+```yaml
+services:
+  celery-worker:
+    image: mediacms:latest
+    environment:
+      ENABLE_UWSGI: "no"
+      ENABLE_NGINX: "no"
+      ENABLE_CELERY_BEAT: "no"
+      ENABLE_CELERY_SHORT: "yes"
+      ENABLE_CELERY_LONG: "yes"
+      ENABLE_MIGRATIONS: "no"
+```
+These environment variables can be used to deploy the `celery-beat` instance:
+```yaml
+services:
+  celery-beat:
+    image: mediacms:latest
+    environment:
+      ENABLE_UWSGI: "no"
+      ENABLE_NGINX: "no"
+      ENABLE_CELERY_BEAT: "yes"
+      ENABLE_CELERY_SHORT: "no"
+      ENABLE_CELERY_LONG: "no"
+      ENABLE_MIGRATIONS: "no"
+```
 
 #### 🔐 Shared OIDC client secret (critical)
 
