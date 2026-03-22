@@ -455,3 +455,7 @@ ex2:fyzicka-osoba rdfs:label "Fyzická osoba" ;
     owl:disjointWith ex2:pravnicka-osoba .
 
 ex2:pravnicka-osoba rdfs:label "Právnická osoba" .
+
+
+
+
