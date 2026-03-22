@@ -54,21 +54,9 @@ server {
         return 302 ${APP_ORIGIN}${APP_ROOT_PATH}${ANNOTATOR_PATH}/;
     }
 
-    location = ${ANALYTICS_PATH} {
-        return 302 ${APP_ORIGIN}${APP_ROOT_PATH}${ANALYTICS_PATH}/;
-    }
-
     # ----------------------------
     # Frontend Applications
     # ----------------------------
-
-    location ${RECORD_MANAGER_PATH}/ {
-        proxy_pass http://record-manager/;
-    }
-
-    location ${ANALYTICS_PATH}/ {
-        proxy_pass http://record-manager-statistics/;
-    }
 
     location ${ANNOTATOR_PATH}/ {
         auth_request /_auth;
@@ -76,6 +64,9 @@ server {
         proxy_pass http://media-asset-annotator/;
     }
 
+    location ${RECORD_MANAGER_PATH}/ {
+        proxy_pass http://record-manager/;
+    }
 
     # ----------------------------
     # Backend Services
@@ -89,11 +80,6 @@ server {
 
     location /services/record-manager-server/ {
         proxy_pass ${INTERNAL_RECORD_MANAGER_SERVER_SERVICE}/record-manager/;
-        proxy_cookie_path /record-manager ${APP_ROOT_PATH}/services;
-    }
-
-    location /services/statistics-server/ {
-        proxy_pass ${INTERNAL_RECORD_MANAGER_STATISTICS_SERVER_SERVICE}/statistics-server/;
         proxy_cookie_path /record-manager ${APP_ROOT_PATH}/services;
     }
 
@@ -142,6 +128,11 @@ server {
     # ----------------------------
     # Static / Misc
     # ----------------------------
+
+    location ${ANALYTICS_PATH} {
+        try_files /statistics.html =404;
+        root /usr/share/nginx/html;
+    }
 
     location /health-check {
         return 200;

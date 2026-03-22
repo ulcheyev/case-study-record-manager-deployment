@@ -98,12 +98,6 @@ EOT
     annotator-access-role = <<EOT
 Allows users to access the media asset annotator.
 EOT
-    read-answer-feedback-role = <<EOT
-Allows users to view feedback for entered answers.
-EOT
-    read-question-hint-role = <<EOT
-Allows users to reveal hint for question.
-EOT
   }
 }
 
