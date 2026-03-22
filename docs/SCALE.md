@@ -157,6 +157,11 @@ How to share the client secret:
 * Option 1 — Environment variables: provide the same secret to all nodes via environment variables by configuring [local_settings.py](../configs/mediacms/local_settings.py)
 * Option 2 — Secret management system: use a centralized secret store. For example [HashiCorp Vault](https://www.hashicorp.com/en/products/vault)
 
+### Step 5 — Add a load balancer for mediacms instances
+
+The gateway nginx issues a `302` redirect to `MEDIA_CMS_PUBLIC_ORIGIN`. 
+The load balancer must sit in front of the `mediacms` containers at the URL the browser lands on after the redirect.
+It can be any reverse proxy or load balancer. nginx example:
 
 ```nginx
 upstream mediacms_cluster {
