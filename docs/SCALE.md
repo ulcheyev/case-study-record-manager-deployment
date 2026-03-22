@@ -103,7 +103,7 @@ sequenceDiagram
 When many users watch videos concurrently, scaling `celery-worker` is irrelevant — the bottleneck shifts entirely to **nginx and the volume read throughput**. 
 
 1. **Single host** — nginx and the volume live on the same machine. The ceiling is set by CPU (nginx worker processes), open file descriptor limits, and disk IOPS.
-2. **Multiple nodes** — when a single host is no longer enough, the local Docker volume becomes the bottleneck: it cannot be read by nginx running on a different machine. Storage must be replaced with something all nodes can reach simultaneously — NFS, object storage, or a CDN. 
+2. **Multiple nodes** — when a single host is no longer enough, the local Docker volume becomes the bottleneck: it cannot be read by nginx running on a different machine. Storage must be replaced with something all nodes can reach simultaneously — NFS or object storage. 
 
 ## Multi-node scaling options
 
@@ -113,7 +113,7 @@ For multiple nodes you can use **Object storage**.
 
 You can use:
 - **MinIO** — self-hosted, S3-compatible, runs as a Docker container
-- **AWS S3 / GCP Cloud Storage** — managed, no infrastructure to maintain
+- **AWS S3 / GCP Cloud Storage**
 
 ### Step 1 — Deploy MinIO / Get S3
 
