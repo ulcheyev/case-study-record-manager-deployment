@@ -5,9 +5,9 @@
 MediaCMS is not a single service. It's a distributed system built around Django and Celery.
 
 | Service / Container         | Role               | Responsibilities                                                           | Scalable             | Notes                                                        |
-| --------------------------- | ------------------ | -------------------------------------------------------------------------- | -------------------- |--------------------------------------------------------------|
+| --------------------------- | ------------------ |----------------------------------------------------------------------------| -------------------- |--------------------------------------------------------------|
 | **migrations**              | Init / setup job   | Runs DB migrations, initializes admin user, waits for secrets              | ❌ No                 | One-time job, must complete before app start                 |
-| **celery-worker**           | Background worker  | Video transcoding, thumbnail generation, async processing                  | ✅ Yes | Becomes a bottleneck with a large number of uploading videos |
+| **celery-worker**           | Background worker  | Video transcoding, thumbnail generation. Poll a task from Redis queue.     | ✅ Yes | Becomes a bottleneck with a large number of uploading videos |
 | **mediacms (web)**          | Web layer (Django) | Handles HTTP requests, UI, API, authentication (OIDC), metadata operations | ✅ Yes | Stateless, requires load balancing                           |
 | **celery-beat**             | Scheduler          | Executes periodic tasks (cron jobs)                                        | ❌ No                 | Must run as a single instance                                |
 | **redis**                   | Cache / broker     | Celery task queue, caching, session storage                                | ⚠️ Limited           | Requires clustering for scaling                              |
@@ -100,7 +100,7 @@ sequenceDiagram
 
 ## Streaming Scaling
 
-When many users watch videos concurrently, `celery-worker` is irrelevant — the bottleneck shifts entirely to **nginx and the volume read throughput**. Each viewer continuously pulls `.ts` segments; at high concurrency nginx opens many simultaneous file descriptors and the storage backend must sustain many parallel reads.
+When many users watch videos concurrently, scaling `celery-worker` is irrelevant — the bottleneck shifts entirely to **nginx and the volume read throughput**. 
 
 1. **Single host** — nginx and the volume live on the same machine. The ceiling is set by CPU (nginx worker processes), open file descriptor limits, and disk IOPS.
 2. **Multiple nodes** — when a single host is no longer enough, the local Docker volume becomes the bottleneck: it cannot be read by nginx running on a different machine. Storage must be replaced with something all nodes can reach simultaneously — NFS, object storage, or a CDN. 
@@ -140,15 +140,18 @@ Once storage is in MinIO or S3, remove the `mediacms-media` volume mount from `m
 
 ### Step 4 — Scale mediacms instances
 
-Deploy `mediacms` on multiple nodes.
+Deploy `mediacms web` instances on multiple nodes.
 
-Each node should run:
-- one `mediacms` instance (nginx + Django)
-- connected to the same:
-    - object storage (S3 / MinIO)
-    - Redis
-    - Postgres
-    - Keycloak
+Each node should run `mediacms web` instance (nginx + Django) and be connected to the same `shared services`:
+- Object storage (S3 / MinIO)
+- Redis
+- Postgres
+- Keycloak
+
+#### Background services
+In addition to web instances, the following services must be deployed and connected to the same `shared services`:
+- **At least one `celery-worker`**
+- **Exactly one `celery-beat`**
 
 #### 🔐 Shared OIDC client secret (critical)
 
