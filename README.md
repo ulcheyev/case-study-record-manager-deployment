@@ -36,9 +36,9 @@ Authentication is based on:
 
 ---
 
-### 1.2 Scaling Configuration
+### 1.2 MediaCMS Scaling
 Refer to:
-- 🔗 [Scaling Docs](./docs/SCALE.md)
+- 🔗 [MediaCMS Scaling Docs](./docs/SCALE.md)
 
 ### 1.3 MediaCMS Configuration
 
