@@ -1,6 +1,6 @@
 import os
 import time
-from mediacms.settings import *
+from mediacms.mediacms.settings import *
 
 # ========================
 # BASE
