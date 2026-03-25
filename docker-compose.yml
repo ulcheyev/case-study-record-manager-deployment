@@ -232,6 +232,7 @@ services:
       ENABLE_MIGRATIONS: no
       FRONTEND_HOST: ${MEDIA_CMS_PUBLIC_ORIGIN:-http://localhost:${MEDIA_CMS_HOST_PORT:-2080}}
       POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_HOST: postgres
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     depends_on:
       - migrations
@@ -253,6 +254,7 @@ services:
       ENABLE_CELERY_LONG: no
       ENABLE_MIGRATIONS: no
       POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_HOST: postgres
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     depends_on:
       - redis
@@ -273,6 +275,7 @@ services:
       ENABLE_CELERY_BEAT: no
       ENABLE_MIGRATIONS: no
       POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_HOST: postgres
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     depends_on:
       - migrations
