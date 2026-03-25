@@ -1,6 +1,6 @@
 import os
 import time
-from ..settins import *
+from ..settings import *
 # ========================
 # BASE
 # ========================
