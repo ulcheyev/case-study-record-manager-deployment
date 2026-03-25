@@ -1,5 +1,3 @@
-# deploy/docker/settings/prod.py
-
 from .base import *
 
 DEBUG = False

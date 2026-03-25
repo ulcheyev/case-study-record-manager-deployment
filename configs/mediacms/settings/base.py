@@ -1,8 +1,6 @@
-# deploy/docker/settings/base.py
-
 import os
 import time
-from ..settings import *   # MediaCMS original settings
+from mediacms.settings import *
 
 # ========================
 # BASE
