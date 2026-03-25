@@ -1,11 +1,6 @@
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, login
 
 class DevAutoLoginMiddleware:
-    """
-    Automatically logs in a dev user for every request.
-    Only use in DEV profile.
-    """
-
     def __init__(self, get_response):
         self.get_response = get_response
 
@@ -21,12 +16,11 @@ class DevAutoLoginMiddleware:
                 }
             )
 
-            # Ensure privileges (in case user already existed)
             if not user.is_staff or not user.is_superuser:
                 user.is_staff = True
                 user.is_superuser = True
                 user.save()
 
-            request.user = user
+            login(request, user)
 
         return self.get_response(request)

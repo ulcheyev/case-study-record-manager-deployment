@@ -42,7 +42,7 @@ def dev_config():
     ]
 
     # ✅ inject your dev middleware at the TOP
-    middleware.insert(0, "deploy.docker.local_settings.DevAutoLoginMiddleware")
+    middleware.insert(0, "deploy.docker.dev_auth.DevAutoLoginMiddleware")
 
     return {
         "DEBUG": True,
