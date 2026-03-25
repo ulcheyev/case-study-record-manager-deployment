@@ -8,13 +8,17 @@ print(f"[local_settings] ENV = {ENV}")
 # ========================
 # DATABASE (override safely)
 # ========================
-DATABASES["default"].update({
-    "NAME": os.getenv("POSTGRES_NAME", "record-manager"),
-    "HOST": os.getenv("POSTGRES_HOST", "postgres"),
-    "PORT": os.getenv("POSTGRES_PORT", "5432"),
-    "USER": os.getenv("POSTGRES_USER", "mediacms"),
-    "PASSWORD": os.getenv("POSTGRES_PASSWORD", "mediacms"),
-})
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv('POSTGRES_NAME', 'record-manager'),
+        "HOST": os.getenv('POSTGRES_HOST', 'postgres'),
+        "PORT": os.getenv('POSTGRES_PORT', '5432'),
+        "USER": os.getenv('POSTGRES_USER', 'mediacms'),
+        "PASSWORD": os.getenv('POSTGRES_PASSWORD', 'mediacms'),
+        "OPTIONS": {'pool': True},
+    }
+}
 
 # ========================
 # REDIS / CELERY
