@@ -34,6 +34,13 @@ services:
     environment:
       DEBUG: "True"
       DO_NOT_TRANSCODE_VIDEO: "True"
+      DJANGO_ENV: "dev"
+
+  migrations:
+    environment:
+      DEBUG: "True"
+      DO_NOT_TRANSCODE_VIDEO: "True"
+      DJANGO_ENV: "dev"
 
   # Celery workers are not needed in dev since transcoding is disabled.
   celery-worker:
