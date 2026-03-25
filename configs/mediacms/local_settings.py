@@ -6,7 +6,7 @@ ENV = os.getenv("DJANGO_ENV", "prod")
 print(f"[local_settings] ENV = {ENV}")
 
 # ========================
-# DATABASE (same as yours)
+# DATABASE
 # ========================
 DATABASES = {
     "default": {
@@ -25,9 +25,27 @@ DATABASES = {
 # ========================
 REDIS_LOCATION = os.getenv('REDIS_LOCATION', 'redis://redis:6379/1')
 
-CACHES["default"]["LOCATION"] = REDIS_LOCATION
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": REDIS_LOCATION,
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+    }
+}
 BROKER_URL = REDIS_LOCATION
 CELERY_RESULT_BACKEND = REDIS_LOCATION
+
+
+# ========================
+# COMMON
+# ========================
+DO_NOT_TRANSCODE_VIDEO = os.getenv('DO_NOT_TRANSCODE_VIDEO', 'False') == 'True'
+MP4HLS_COMMAND = "/home/mediacms.io/bento4/bin/mp4hls"
+FRONTEND_HOST = os.getenv('FRONTEND_HOST', 'http://localhost')
+PORTAL_NAME = os.getenv('PORTAL_NAME', 'MediaCMS')
+REGISTER_ALLOWED = False
 
 # ========================
 # PROFILE DEFINITIONS
@@ -41,7 +59,6 @@ def dev_config():
         if m != 'deploy.docker.protected_media.ProtectedMediaMiddleware'
     ]
 
-    # ✅ inject your dev middleware at the TOP
     middleware.append("deploy.docker.dev_auth.DevAutoLoginMiddleware")
 
     return {
@@ -49,14 +66,10 @@ def dev_config():
         "USE_IDENTITY_PROVIDERS": False,
         "USE_RBAC": False,
         "GLOBAL_LOGIN_REQUIRED": False,
-
-        # ❗ MUST NOT be None
         "LOGIN_URL": "/",
         "LOGIN_REDIRECT_URL": "/",
         "LOGOUT_REDIRECT_URL": "/",
-
         "MIDDLEWARE": middleware,
-
         "INSTALLED_APPS": [
             app for app in INSTALLED_APPS
             if app != "allauth.socialaccount.providers.openid_connect"
@@ -125,6 +138,10 @@ def prod_config():
             }
         },
         "SOCIALACCOUNT_ADAPTER": "deploy.docker.oidc_adapter.RoleRestrictedSocialAccountAdapter",
+        "MEDIACMS_REQUIRED_ROLE": os.getenv(
+            "MEDIACMS_REQUIRED_ROLE",
+            "mediacms-access-role"
+        )
     }
 
 
@@ -141,15 +158,5 @@ if ENV not in PROFILES:
     raise RuntimeError(f"Unknown DJANGO_ENV: {ENV}")
 
 config = PROFILES[ENV]()
-
-# ========================
-# APPLY CONFIG CLEANLY
-# ========================
-
 globals().update(config)
 
-# ========================
-# COMMON
-# ========================
-DO_NOT_TRANSCODE_VIDEO = os.getenv('DO_NOT_TRANSCODE_VIDEO', 'False') == 'True'
-MP4HLS_COMMAND = "/home/mediacms.io/bento4/bin/mp4hls"
