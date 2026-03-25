@@ -1,84 +1,134 @@
 import os
-from .profiles import *
 import time
 
-# ========================
-# PROFILE LOADER
-# ========================
-PROFILE = os.getenv("DJANGO_PROFILE", "prod")
+ENV = os.getenv("DJANGO_ENV", "prod")
 
-print(f"[Settings] Loading profile: {PROFILE}")
-
-if PROFILE == "dev":
-    from .profiles.dev import *
-elif PROFILE == "prod":
-    from .profiles.prod import *
-else:
-    raise RuntimeError(f"Unknown DJANGO_PROFILE: {PROFILE}")
+print(f"[local_settings] ENV = {ENV}")
 
 # ========================
-# BASE
+# DATABASE (override safely)
 # ========================
+DATABASES["default"].update({
+    "NAME": os.getenv("POSTGRES_NAME", "record-manager"),
+    "HOST": os.getenv("POSTGRES_HOST", "postgres"),
+    "PORT": os.getenv("POSTGRES_PORT", "5432"),
+    "USER": os.getenv("POSTGRES_USER", "mediacms"),
+    "PASSWORD": os.getenv("POSTGRES_PASSWORD", "mediacms"),
+})
 
-FRONTEND_HOST = os.getenv('FRONTEND_HOST', 'http://localhost')
-PORTAL_NAME = os.getenv('PORTAL_NAME', 'MediaCMS')
-
+# ========================
+# REDIS / CELERY
+# ========================
 REDIS_LOCATION = os.getenv('REDIS_LOCATION', 'redis://redis:6379/1')
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv('POSTGRES_NAME', 'record-manager'),
-        "HOST": os.getenv('POSTGRES_HOST', 'postgres'),
-        "PORT": os.getenv('POSTGRES_PORT', '5432'),
-        "USER": os.getenv('POSTGRES_USER', 'mediacms'),
-        "PASSWORD": os.getenv('POSTGRES_PASSWORD', 'mediacms'),
-        "OPTIONS": {'pool': True},
-    }
-}
+CACHES["default"]["LOCATION"] = REDIS_LOCATION
 
-CACHES = {
-    "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": REDIS_LOCATION,
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        },
-    }
-}
-
-# ========================
-# CELERY
-# ========================
 BROKER_URL = REDIS_LOCATION
-CELERY_RESULT_BACKEND = BROKER_URL
+CELERY_RESULT_BACKEND = REDIS_LOCATION
 
 # ========================
-# VIDEO
+# DEV vs PROD SWITCH
+# ========================
+
+if ENV == "dev":
+    print("[local_settings] Running in DEV mode")
+
+    DEBUG = True
+
+    # 🔓 Disable auth completely
+    USE_IDENTITY_PROVIDERS = False
+    USE_RBAC = False
+    GLOBAL_LOGIN_REQUIRED = False
+
+    LOGIN_URL = None
+    LOGIN_REDIRECT_URL = "/"
+    LOGOUT_REDIRECT_URL = "/"
+
+    # ❌ remove protected media middleware if present
+    MIDDLEWARE = [
+        m for m in MIDDLEWARE
+        if m != 'deploy.docker.protected_media.ProtectedMediaMiddleware'
+    ]
+
+    # ❌ remove OIDC app if present
+    INSTALLED_APPS = [
+        app for app in INSTALLED_APPS
+        if app != "allauth.socialaccount.providers.openid_connect"
+    ]
+
+else:
+    print("[local_settings] Running in PROD mode")
+
+    DEBUG = os.getenv('DEBUG', 'False') == 'True'
+
+    USE_IDENTITY_PROVIDERS = True
+    USE_RBAC = True
+    GLOBAL_LOGIN_REQUIRED = True
+
+    LOGIN_URL = "/accounts/oidc/keycloak/login/"
+    LOGIN_REDIRECT_URL = "/"
+    LOGOUT_REDIRECT_URL = "/accounts/oidc/keycloak/login/"
+
+    # ========================
+    # SECRET LOADER (ONLY PROD)
+    # ========================
+    def read_secret(
+            path="/secrets/mediacms_client_secret",
+            timeout=2000,
+            interval=10,
+    ):
+        start = time.time()
+
+        while True:
+            if os.path.exists(path):
+                with open(path) as f:
+                    secret = f.read().strip()
+                    if secret:
+                        print("[OIDC] Secret loaded")
+                        return secret
+
+            if time.time() - start > timeout:
+                raise RuntimeError(f"Secret not found: {path}")
+
+            time.sleep(interval)
+
+    print("[OIDC] Waiting for secret...")
+    OIDC_SECRET = read_secret()
+
+    # ✅ enable OIDC
+    INSTALLED_APPS = INSTALLED_APPS + [
+        "allauth.socialaccount.providers.openid_connect",
+    ]
+
+    SOCIALACCOUNT_PROVIDERS = {
+        "openid_connect": {
+            "APPS": [
+                {
+                    "provider_id": "keycloak",
+                    "name": "Keycloak",
+                    "client_id": "mediacms",
+                    "secret": OIDC_SECRET,
+                    "settings": {
+                        "server_url": os.getenv(
+                            "OIDC_SERVER_URL",
+                            "http://auth-server:8080/realms/record-manager/.well-known/openid-configuration",
+                        ),
+                    },
+                }
+            ]
+        }
+    }
+
+    SOCIALACCOUNT_ADAPTER = "deploy.docker.oidc_adapter.RoleRestrictedSocialAccountAdapter"
+
+    # ✅ enforce protected media
+    if 'deploy.docker.protected_media.ProtectedMediaMiddleware' not in MIDDLEWARE:
+        MIDDLEWARE.append(
+            'deploy.docker.protected_media.ProtectedMediaMiddleware'
+        )
+
+# ========================
+# COMMON
 # ========================
 DO_NOT_TRANSCODE_VIDEO = os.getenv('DO_NOT_TRANSCODE_VIDEO', 'False') == 'True'
-
-# ========================
-# SECRET LOADER
-# ========================
-def read_secret(
-        path="/secrets/mediacms_client_secret",
-        timeout=1000,
-        interval=5,
-):
-    start = time.time()
-
-    while True:
-        if os.path.exists(path):
-            with open(path) as f:
-                secret = f.read().strip()
-                if secret:
-                    print("[OIDC] Secret loaded")
-                    return secret
-
-        if time.time() - start > timeout:
-            print(f"[OIDC] Secret not found after {timeout}s: {path}")
-            sys.exit(1)
-
-        time.sleep(interval)
-
+MP4HLS_COMMAND = "/home/mediacms.io/bento4/bin/mp4hls"

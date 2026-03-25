@@ -35,14 +35,12 @@ services:
       DEBUG: "True"
       DO_NOT_TRANSCODE_VIDEO: "True"
       DJANGO_PROFILE: "dev"
-      DJANGO_SETTINGS_MODULE: deploy.docker.settings
 
   migrations:
     environment:
       DEBUG: "True"
       DO_NOT_TRANSCODE_VIDEO: "True"
       DJANGO_PROFILE: "dev"
-      DJANGO_SETTINGS_MODULE: deploy.docker.settings
 
   # Celery workers are not needed in dev since transcoding is disabled.
   celery-worker:
