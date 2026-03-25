@@ -1,10 +1,9 @@
 import os
-import time
-import sys
 from .settings import *
+import time
 
 # ========================
-# BASE (always applied)
+# BASE
 # ========================
 
 FRONTEND_HOST = os.getenv('FRONTEND_HOST', 'http://localhost')
@@ -44,7 +43,6 @@ CELERY_RESULT_BACKEND = BROKER_URL
 # VIDEO
 # ========================
 DO_NOT_TRANSCODE_VIDEO = os.getenv('DO_NOT_TRANSCODE_VIDEO', 'False') == 'True'
-MP4HLS_COMMAND = "/home/mediacms.io/bento4/bin/mp4hls"
 
 # ========================
 # SECRET LOADER
