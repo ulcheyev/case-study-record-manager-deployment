@@ -1,6 +1,6 @@
 import os
 import time
-
+from .settings import *
 ENV = os.getenv("DJANGO_ENV", "prod")
 
 print(f"[local_settings] ENV = {ENV}")
