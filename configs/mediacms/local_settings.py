@@ -36,18 +36,27 @@ CELERY_RESULT_BACKEND = REDIS_LOCATION
 def dev_config():
     print("[local_settings] Running in DEV mode")
 
+    middleware = [
+        m for m in MIDDLEWARE
+        if m != 'deploy.docker.protected_media.ProtectedMediaMiddleware'
+    ]
+
+    # ✅ inject your dev middleware at the TOP
+    middleware.insert(0, "deploy.docker.local_settings.DevAutoLoginMiddleware")
+
     return {
         "DEBUG": True,
         "USE_IDENTITY_PROVIDERS": False,
         "USE_RBAC": False,
         "GLOBAL_LOGIN_REQUIRED": False,
-        "LOGIN_URL": None,
+
+        # ❗ MUST NOT be None
+        "LOGIN_URL": "/",
         "LOGIN_REDIRECT_URL": "/",
         "LOGOUT_REDIRECT_URL": "/",
-        "MIDDLEWARE": [
-            m for m in MIDDLEWARE
-            if m != 'deploy.docker.protected_media.ProtectedMediaMiddleware'
-        ],
+
+        "MIDDLEWARE": middleware,
+
         "INSTALLED_APPS": [
             app for app in INSTALLED_APPS
             if app != "allauth.socialaccount.providers.openid_connect"
