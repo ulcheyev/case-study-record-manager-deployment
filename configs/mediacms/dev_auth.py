@@ -5,6 +5,9 @@ class DevAutoLoginMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
+        if not hasattr(request, "user"):
+            return self.get_response(request)
+
         if not request.user.is_authenticated:
             User = get_user_model()
 
@@ -16,11 +19,10 @@ class DevAutoLoginMiddleware:
                 }
             )
 
-            if not user.is_staff or not user.is_superuser:
-                user.is_staff = True
-                user.is_superuser = True
-                user.save()
-
-            login(request, user)
+            login(
+                request,
+                user,
+                backend="django.contrib.auth.backends.ModelBackend"
+            )
 
         return self.get_response(request)
