@@ -1,5 +1,5 @@
 import os
-from .settings import *
+from .profiles import *
 import time
 
 # ========================
@@ -10,9 +10,9 @@ PROFILE = os.getenv("DJANGO_PROFILE", "prod")
 print(f"[Settings] Loading profile: {PROFILE}")
 
 if PROFILE == "dev":
-    from .settings.dev import *
+    from .profiles.dev import *
 elif PROFILE == "prod":
-    from .settings.prod import *
+    from .profiles.prod import *
 else:
     raise RuntimeError(f"Unknown DJANGO_PROFILE: {PROFILE}")
 
