@@ -5,4 +5,4 @@ COPY ./local_settings.py /home/mediacms.io/mediacms/deploy/docker/local_settings
 COPY ./protected_media.py /home/mediacms.io/mediacms/deploy/docker/protected_media.py
 COPY ./nginx.conf /home/mediacms.io/mediacms/deploy/docker/nginx_http_only.conf
 COPY ./oidc_adapter.py /home/mediacms.io/mediacms/deploy/docker/oidc_adapter.py
-
+COPY ./dev_auth.py /home/mediacms.io/mediacms/deploy/docker/dev_auth.py

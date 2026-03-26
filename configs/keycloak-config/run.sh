@@ -5,27 +5,24 @@ AUTH_SERVER_HOSTNAME="$1"
 AUTH_SERVER_PORT="$2"
 KC_REALM="$3"
 
-echo "Waiting for Keycloak admin API to be ready..."
+echo "Waiting for Keycloak..."
 until wget -qO- "http://${AUTH_SERVER_HOSTNAME}:${AUTH_SERVER_PORT}/realms/master" > /dev/null 2>&1; do
   sleep 2
 done
 echo "Keycloak is ready."
 
+cd /workspace
 terraform init
 
-echo "Trying to import realm if it exists..."
-
-if terraform import module.realms.keycloak_realm.realm "$KC_REALM"; then
+if terraform import module.realms.keycloak_realm.realm "$KC_REALM" 2>/dev/null; then
   echo "Realm imported."
 else
-  echo "Realm does not exist yet. It will be created."
+  echo "Realm will be created."
 fi
 
-echo "Applying Terraform..."
 terraform apply -parallelism=4 -auto-approve
 
-echo "Terraform applied. Extracting secret..."
-
+# Extract secrets
 MEDIACMS_SECRET=$(terraform output -raw mediacms_client_secret)
 ANNOTATOR_SECRET=$(terraform output -raw annotator_client_secret)
 mkdir -p /secrets
@@ -33,4 +30,12 @@ echo "$MEDIACMS_SECRET" > /secrets/mediacms_client_secret
 echo "$ANNOTATOR_SECRET" > /secrets/annotator_client_secret
 head -c 32 /dev/urandom | base64 | head -c 32 > /secrets/oauth2_cookie_secret
 
-echo "Done."
+# Dev phase — only runs if /workspace/dev is mounted
+if [ -d /workspace/dev ]; then
+  echo "=== Dev config detected, applying... ==="
+  cd /workspace/dev
+  terraform init -backend=false
+  export TF_VAR_realm_id="$KC_REALM"
+  terraform apply -parallelism=4 -auto-approve
+  echo "=== Dev config applied ==="
+fi
