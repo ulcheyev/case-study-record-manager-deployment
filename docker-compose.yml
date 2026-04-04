@@ -86,7 +86,7 @@ services:
       AUTHENTICATION: "oidc"
       AUTH_SERVER_URL: "${PUBLIC_ORIGIN:-http://localhost:${INTERNAL_HOST_PORT:-1235}}${APP_ROOT_PATH:-}/services/auth/realms/record-manager"
       AUTH_CLIENT_ID: "record-manager"
-      ANALYTICS_URL: "${PUBLIC_ORIGIN:-http://localhost:${INTERNAL_HOST_PORT:-1235}}${APP_ROOT_PATH:-}${ANALYTICS_PATH:-/statistics}"
+      ANALYTICS_URL: "${PUBLIC_ORIGIN:-http://localhost:${INTERNAL_HOST_PORT:-1235}}${APP_ROOT_PATH:-}${RECORD_MANAGER_PATH:-/record-manager}/statistics"
       EXTENSIONS: "${RECORD_MANAGER_EXTENSIONS:-supplier}"
 
   record-manager-server:
@@ -119,7 +119,7 @@ services:
     environment:
       API_URL: "${PUBLIC_ORIGIN:-http://localhost:${INTERNAL_HOST_PORT:-1235}}${APP_ROOT_PATH:-}/services/statistics-server"
       AUTH_URL: "${PUBLIC_ORIGIN:-http://localhost:${INTERNAL_HOST_PORT:-1235}}${APP_ROOT_PATH:-}/services/auth/realms/record-manager"
-      BASE_PATH: "${APP_ROOT_PATH:-}${ANALYTICS_PATH:-/statistics}"
+      BASE_PATH: "${APP_ROOT_PATH:-}${RECORD_MANAGER_PATH:-/record-manager}/statistics"
       APP_TITLE: "${STATISTICS_APP_TITLE:-Record Manager Statistics}"
       APP_MODE: "${STATISTICS_APP_MODE:-prod}"
 
