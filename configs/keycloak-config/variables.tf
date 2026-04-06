@@ -49,3 +49,8 @@ variable "google_client_secret" {
   sensitive = true
   default = ""
 }
+
+variable "rm_base_path" {
+  type      = string
+  sensitive = false
+}
