@@ -19,8 +19,8 @@ resource "keycloak_openid_client" "record_manager" {
   pkce_code_challenge_method = "S256"
 
   valid_redirect_uris = [
-      "${var.public_origin}/record-manager/oidc-signin-callback*",
-      "${var.public_origin}/record-manager/oidc-silent-callback*"
+      "${var.public_origin}${var.rm_base_path}/oidc-signin-callback*",
+      "${var.public_origin}${var.rm_base_path}/oidc-silent-callback*"
   ]
 
   valid_post_logout_redirect_uris = [

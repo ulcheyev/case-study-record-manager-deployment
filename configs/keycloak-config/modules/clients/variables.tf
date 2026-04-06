@@ -9,3 +9,7 @@ variable "mediacms_base_url" {
 variable "public_origin" {
   type = string
 }
+
+variable "rm_base_path" {
+    type    = string
+}

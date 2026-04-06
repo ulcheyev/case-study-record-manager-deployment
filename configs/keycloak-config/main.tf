@@ -27,6 +27,7 @@ module "clients" {
   realm_id            = module.realms.realm_id
   mediacms_base_url   = var.mediacms_base_url
   public_origin       = var.public_origin
+  rm_base_path = var.rm_base_path
 }
 
 module "roles" {
