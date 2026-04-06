@@ -11,7 +11,7 @@ print(f"[local_settings] ENV = {ENV}")
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv('POSTGRES_NAME', 'record-manager'),
+        "NAME": os.getenv('POSTGRES_NAME', 'mediacms'),
         "HOST": os.getenv('POSTGRES_HOST', 'postgres'),
         "PORT": os.getenv('POSTGRES_PORT', '5432'),
         "USER": os.getenv('POSTGRES_USER', 'mediacms'),
