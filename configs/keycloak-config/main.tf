@@ -27,7 +27,7 @@ module "clients" {
   realm_id            = module.realms.realm_id
   mediacms_base_url   = var.mediacms_base_url
   public_origin       = var.public_origin
-  rm_base_path = var.rm_base_path
+  rm_base_path        = var.rm_base_path
 }
 
 module "roles" {
@@ -47,7 +47,7 @@ module "scopes" {
 module "role_groups" {
   source = "./modules/role-groups"
 
-  realm_id      = module.realms.realm_id
+  realm_id       = module.realms.realm_id
   realm_role_ids = module.roles.realm_role_ids
 }
 
@@ -63,7 +63,7 @@ module "events" {
 module "identity_providers" {
   source = "./modules/identity-providers"
 
-  realm_id = module.realms.realm_id
+  realm_id             = module.realms.realm_id
   enable_google        = var.enable_google_login
   google_client_id     = var.google_client_id
   google_client_secret = var.google_client_secret
