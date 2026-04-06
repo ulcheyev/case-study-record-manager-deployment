@@ -30,8 +30,7 @@ echo "$MEDIACMS_SECRET" > /secrets/mediacms_client_secret
 echo "$ANNOTATOR_SECRET" > /secrets/annotator_client_secret
 head -c 32 /dev/urandom | base64 | head -c 32 > /secrets/oauth2_cookie_secret
 
-# Dev phase — only runs if /workspace/dev is mounted
-if [ -d /workspace/dev ]; then
+if [ "$ENV" = "dev"  ]; then
   echo "=== Dev config detected, applying... ==="
   cd /workspace/dev
   terraform init -backend=false

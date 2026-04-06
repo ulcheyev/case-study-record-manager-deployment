@@ -63,6 +63,7 @@ services:
 
   keycloak-config:
     environment:
+      ENV: "dev"
       TF_VAR_dev_redirect_uris: '[
         "http://localhost:4173*",
         "http://localhost:5173*",
@@ -81,6 +82,5 @@ services:
       TF_VAR_test_user_username: "${TEST_USER_USERNAME:-test}"
       TF_VAR_test_user_password: "${TEST_USER_PASSWORD:-test}"
     volumes:
-      - ./configs/keycloak-config/base-config:/workspace
-      - ./configs/keycloak-config/dev:/workspace/dev
+      - ./configs/keycloak-config:/workspace
       - keycloak-secrets:/secrets
