@@ -1,2 +1,2 @@
-CREATE DATABASE record-manager;
+CREATE DATABASE "record-manager";
 CREATE DATABASE mediacms;

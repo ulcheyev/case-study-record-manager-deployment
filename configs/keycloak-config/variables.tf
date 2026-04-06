@@ -34,6 +34,10 @@ variable "public_origin" {
   type = string
 }
 
+variable "rm_base_path" {
+  type      = string
+}
+
 variable "enable_google_login" {
   type    = bool
   default = false
@@ -50,7 +54,3 @@ variable "google_client_secret" {
   default = ""
 }
 
-variable "rm_base_path" {
-  type      = string
-  sensitive = false
-}

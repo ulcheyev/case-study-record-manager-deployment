@@ -315,7 +315,6 @@ services:
     image: postgres:14
     container_name: ${RECORD_SET_NAME:-rm}-postgres
     environment:
-      POSTGRES_DB: record-manager
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
