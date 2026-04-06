@@ -81,6 +81,6 @@ services:
       TF_VAR_test_user_username: "${TEST_USER_USERNAME:-test}"
       TF_VAR_test_user_password: "${TEST_USER_PASSWORD:-test}"
     volumes:
-      - ./configs/keycloak-config:/workspace
+      - ./configs/keycloak-config/base-config:/workspace
       - ./configs/keycloak-config/dev:/workspace/dev
       - keycloak-secrets:/secrets
