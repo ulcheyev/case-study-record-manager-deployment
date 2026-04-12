@@ -118,7 +118,7 @@ services:
     depends_on:
       - record-manager-statistics-server
     environment:
-      API_URL: "${PUBLIC_ORIGIN:-http://localhost:${INTERNAL_HOST_PORT:-1235}}${APP_ROOT_PATH:-}/services/statistics-server"
+      API_URL: "${PUBLIC_ORIGIN:-http://localhost:${INTERNAL_HOST_PORT:-1235}}${APP_ROOT_PATH:-}/services/record-manager-statistics"
       AUTH_URL: "${PUBLIC_ORIGIN:-http://localhost:${INTERNAL_HOST_PORT:-1235}}${APP_ROOT_PATH:-}/services/auth"
       BASE_PATH: "${APP_ROOT_PATH:-}${RECORD_MANAGER_PATH:-/record-manager}/statistics"
       RM_BASE_PATH: "${APP_ROOT_PATH:-}${RECORD_MANAGER_PATH:-/record-manager}"
