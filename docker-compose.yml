@@ -124,6 +124,7 @@ services:
       RM_BASE_PATH: "${APP_ROOT_PATH:-}${RECORD_MANAGER_PATH:-/record-manager}"
       APP_TITLE: "${STATISTICS_APP_TITLE:-Record Manager Statistics}"
       APP_MODE: "${STATISTICS_APP_MODE:-prod}"
+      CLIENT_ID: "record-manager-statistics"
 
 
   record-manager-statistics-server:
@@ -141,7 +142,6 @@ services:
       REPOSITORY_URL: "http://db-server:7200/repositories/record-manager-app"
       DB_USERNAME: "${GDB_USERNAME:-}"
       DB_PASSWORD: "${GDB_PASSWORD:-}"
-      RECORD_MANAGER_INTERNAL_URL: "http://record-manager-server:8080"
       CORS_ALLOWED_ORIGINS: "${PUBLIC_ORIGIN:-http://record-manager-statistics,http://localhost:${INTERNAL_HOST_PORT:-1235}}"
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUERURI: "${PUBLIC_ORIGIN:-http://localhost:${INTERNAL_HOST_PORT:-1235}}${APP_ROOT_PATH:-}/services/auth/realms/record-manager"
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWKSETURI: "http://auth-server:8080/realms/record-manager/protocol/openid-connect/certs"
