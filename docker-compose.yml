@@ -119,13 +119,12 @@ services:
       - record-manager-statistics-server
     environment:
       API_URL: "${PUBLIC_ORIGIN:-http://localhost:${INTERNAL_HOST_PORT:-1235}}${APP_ROOT_PATH:-}/services/statistics-server"
-      AUTH_URL: "${PUBLIC_ORIGIN:-http://localhost:${INTERNAL_HOST_PORT:-1235}}${APP_ROOT_PATH:-}/services/auth/realms/record-manager"
+      AUTH_URL: "${PUBLIC_ORIGIN:-http://localhost:${INTERNAL_HOST_PORT:-1235}}${APP_ROOT_PATH:-}/services/auth"
       BASE_PATH: "${APP_ROOT_PATH:-}${RECORD_MANAGER_PATH:-/record-manager}/statistics"
       RM_BASE_PATH: "${APP_ROOT_PATH:-}${RECORD_MANAGER_PATH:-/record-manager}"
       APP_TITLE: "${STATISTICS_APP_TITLE:-Record Manager Statistics}"
       APP_MODE: "${STATISTICS_APP_MODE:-prod}"
       CLIENT_ID: "record-manager-statistics"
-
 
   record-manager-statistics-server:
     image: manki1337/record-manager-statistics-server:latest
