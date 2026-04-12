@@ -15,9 +15,6 @@ resource "keycloak_openid_client" "record_manager_statistics" {
   root_url = var.public_origin
   base_url = var.public_origin
 
-  # keycloak-js uses PKCE by default
-  pkce_code_challenge_method = "S256"
-
   valid_redirect_uris = [
     "${var.public_origin}${var.rm_base_path}/statistics/*"
   ]
