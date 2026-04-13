@@ -23,7 +23,6 @@ resource "keycloak_openid_client" "record_manager_statistics_dev" {
   access_type = "PUBLIC"
 
   standard_flow_enabled      = true
-  pkce_code_challenge_method = "S256"
 
   valid_redirect_uris = var.dev_redirect_uris
   valid_post_logout_redirect_uris = var.dev_valid_post_logout_redirect_uris
