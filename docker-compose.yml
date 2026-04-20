@@ -38,9 +38,7 @@ services:
       - ./configs/nginx/static:/usr/share/nginx/html
 
   oauth2-proxy:
-    build:
-      context: ./configs/oauth2-proxy
-    image: ${RECORD_SET_NAME:-rm}-oauth2-proxy
+    build: ./configs/oauth2-proxy
     container_name: ${RECORD_SET_NAME:-rm}-oauth2-proxy
     restart: always
     depends_on:
@@ -192,7 +190,6 @@ services:
 
   migrations:
     build: ./configs/mediacms
-    image: ${RECORD_SET_NAME:-rm}-media-cms-web
     container_name: ${RECORD_SET_NAME:-rm}-media-cms-migration
     environment:
       ENABLE_UWSGI: no
@@ -216,7 +213,6 @@ services:
 
   mediacms:
     build: ./configs/mediacms
-    image: ${RECORD_SET_NAME:-rm}-media-cms-web
     container_name: ${RECORD_SET_NAME:-rm}-media-cms-web
     # Ports are not defined here.
     expose:
@@ -248,7 +244,6 @@ services:
 
   celery-beat:
     build: ./configs/mediacms
-    image: ${RECORD_SET_NAME:-rm}-media-cms-web
     container_name: ${RECORD_SET_NAME:-rm}-media-cms-beat
     environment:
       ENABLE_UWSGI: no
@@ -267,7 +262,6 @@ services:
   
   celery-worker:
     build: ./configs/mediacms
-    image: ${RECORD_SET_NAME:-rm}-media-cms-web
     container_name: ${RECORD_SET_NAME:-rm}-media-cms-worker
     deploy:
       replicas: 1
@@ -298,9 +292,7 @@ services:
       - redis-data:/data
 
   db-server:
-    build:
-      context: ./configs/db-server
-    image: ${RECORD_SET_NAME:-rm}-db-server
+    build: ./configs/db-server
     container_name: ${RECORD_SET_NAME:-rm}-db-server
     expose:
       - "7200"
