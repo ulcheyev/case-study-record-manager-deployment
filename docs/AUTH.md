@@ -31,7 +31,7 @@ resource "keycloak_user" "default_user" {
   last_name  = "Example"
 
   initial_password {
-    value     = "change-me-on-first-login"
+    value     = "alice"
     # Set to false to not force password change on first login.
     temporary = false
   }
@@ -50,7 +50,7 @@ The root Terraform config exposes `module.realms`, `module.clients`,
 `module.roles`, etc. — their outputs are available directly from
 `customizations.tf`.
 
-**3. Re-apply.** From the repository root:
+**3. Deploy/Re-apply.** To re-apply from the repository root:
 
 ```bash
 docker compose up -d --force-recreate keycloak-config
