@@ -2,7 +2,7 @@ server {
     listen      80;
     server_name _;
 
-    // Ensure that error pages are processed by nginx and not bypassed by the browser
+    # Ensure that error pages are processed by nginx and not bypassed by the browser
     recursive_error_pages on;
 
     # ------------------------------------------------------------------
