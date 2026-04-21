@@ -33,6 +33,9 @@ server {
     }
 
     location /oauth2/ {
+        # oauth2-proxy isn't needed at nginx-startup time.
+        # If it isn't available, return 503 instead of failing to start nginx.
+        resolver 127.0.0.11 valid=10s ipv6=off;
         proxy_pass http://oauth2-proxy:4180;
         include conf.d/snippets/proxy_headers.conf;
         proxy_set_header X-Auth-Request-Redirect $request_uri;
