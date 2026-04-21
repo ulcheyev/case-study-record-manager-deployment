@@ -14,7 +14,6 @@ echo "Secrets injected."
 export OAUTH2_PROXY_CLIENT_SECRET="$(cat $SECRET_FILE)"
 export OAUTH2_PROXY_COOKIE_SECRET="$(cat $COOKIE_SECRET_FILE)"
 
-
 echo "Waiting for keycloak authorization server running ..."
 DISCOVERY_PATH="/.well-known/openid-configuration"
 
@@ -27,25 +26,10 @@ echo "Original issuer URL: $ISSUER_URL"
 HOST=$(echo "$ISSUER_URL" | awk -F[/:] '{print $4}')
 PORT=$(echo "$ISSUER_URL" | awk -F[/:] '{print $5}')
 
-# If host is localhost, replace with host-gateway IP
-if [ "$HOST" = "localhost" ]; then
-  HOST_IP=$(grep 'localhost$' /etc/hosts | awk '{print $1}' | tail -1)
-  DISCOVERY_URL=$(echo "$DISCOVERY_URL" | sed "s|localhost:${PORT}|${HOST_IP}:${PORT}|")
-fi
-
-#echo "Resolved discovery URL: $DISCOVERY_URL"
-#echo "Waiting for OIDC discovery endpoint to return HTTP 200..."
-
-#while true; do
-#  STATUS=$(wget -q --server-response --spider "$DISCOVERY_URL" 2>&1 \
-#    | awk '/HTTP\// {print $2}' | tail -1)
-#
- # if [ "$STATUS" = "200" ]; then
-  #  echo "OIDC discovery endpoint ready."
-   # break
-  #fi
-
-  sleep 20
-#done
+echo "Waiting for Keycloak at ${HOST}:${PORT}..."
+until wget -qO- "${DISCOVERY_URL}" > /dev/null 2>&1; do
+  sleep 2
+done
+echo "Keycloak is ready."
 
 exec /bin/oauth2-proxy
