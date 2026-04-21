@@ -6,8 +6,13 @@ services:
   # differs from the internal Docker network URL.
   # Cookie security is disabled since we're running over plain HTTP locally.
   oauth2-proxy:
-    extra_hosts:
-      - "localhost:host-gateway"
     environment:
-      OAUTH2_PROXY_INSECURE_OIDC_SKIP_ISSUER_VERIFICATION: "true"
-      OAUTH2_PROXY_COOKIE_SECURE: "false"
+       OAUTH2_PROXY_COOKIE_SECURE: "false"
+       OAUTH2_PROXY_INSECURE_OIDC_SKIP_ISSUER_VERIFICATION: "true"
+       OAUTH2_PROXY_SKIP_OIDC_DISCOVERY: "true"
+    # Browser-facing (stays public):
+       OAUTH2_PROXY_LOGIN_URL: "${PUBLIC_ORIGIN:-http://localhost:${INTERNAL_HOST_PORT:-1235}}${APP_ROOT_PATH:-}/services/auth/realms/record-manager/protocol/openid-connect/auth"
+    # Server-to-server (internal Docker DNS):
+       OAUTH2_PROXY_REDEEM_URL: "http://auth-server:8080/realms/record-manager/protocol/openid-connect/token"
+       OAUTH2_PROXY_OIDC_JWKS_URL: "http://auth-server:8080/realms/record-manager/protocol/openid-connect/certs"
+       OAUTH2_PROXY_PROFILE_URL: "http://auth-server:8080/realms/record-manager/protocol/openid-connect/userinfo"

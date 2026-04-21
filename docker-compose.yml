@@ -207,7 +207,7 @@ services:
     depends_on:
       - redis
       - postgres
-    restart: on-failure
+    restart: no
     volumes:
       - keycloak-secrets:/secrets
 
@@ -237,7 +237,7 @@ services:
       - migrations
       - postgres
       - keycloak-config
-    restart: on-failure
+    restart: always
     volumes:
       - mediacms-media:/home/mediacms.io/mediacms/media_files
       - keycloak-secrets:/secrets
@@ -255,7 +255,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     depends_on:
       - redis
-    restart: on-failure
+    restart: always
     volumes:
       - mediacms-media:/home/mediacms.io/mediacms/media_files
       - keycloak-secrets:/secrets
@@ -275,7 +275,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     depends_on:
       - migrations
-    restart: on-failure
+    restart: always
     volumes:
       - mediacms-media:/home/mediacms.io/mediacms/media_files
       - keycloak-secrets:/secrets  
@@ -287,7 +287,7 @@ services:
     command: redis-server --appendonly yes
     healthcheck:
       test: [ 'CMD-SHELL', 'redis-cli ping || exit 1' ]
-    restart: on-failure:5
+    restart: always
     volumes:
       - redis-data:/data
 
@@ -306,6 +306,7 @@ services:
   postgres:
     image: postgres:14
     container_name: ${RECORD_SET_NAME:-rm}-postgres
+    restart: always
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -318,7 +319,7 @@ services:
     container_name: ${RECORD_SET_NAME:-rm}-auth-server
     command:
       - start --features="token-exchange,admin-fine-grained-authz"
-    restart: on-failure:5
+    restart: always
     expose:
       - "8080"
     depends_on:
@@ -354,6 +355,7 @@ services:
   keycloak-config:
     image: hashicorp/terraform:light
     container_name: ${RECORD_SET_NAME:-rm}-keycloak-config
+    restart: no
     working_dir: /workspace
     entrypoint: ["/workspace/run.sh", "auth-server", "8080", "${KC_REALM}"]
     depends_on:
@@ -366,7 +368,8 @@ services:
       TF_VAR_kc_access_token_lifespan: "${KC_ACCESS_TOKEN_LIFESPAN:-5m}"
       TF_VAR_mediacms_base_url: "${MEDIA_CMS_PUBLIC_ORIGIN:-http://localhost:${MEDIA_CMS_HOST_PORT:-2080}}"
       TF_VAR_public_origin: "${PUBLIC_ORIGIN:-http://localhost:${INTERNAL_HOST_PORT:-1235}}"
-      TF_VAR_rm_base_path: "${APP_ROOT_PATH:-}${RECORD_MANAGER_PATH:-/record-manager}"
+      TF_VAR_base_path: "${APP_ROOT_PATH:-}"
+      TF_VAR_rm_base_path: "${RECORD_MANAGER_PATH:-/record-manager}"
       TF_VAR_enable_google_login: ${ENABLE_GOOGLE_LOGIN:-false}
       TF_VAR_google_client_id: ${GOOGLE_CLIENT_ID:-}
       TF_VAR_google_client_secret: ${GOOGLE_CLIENT_SECRET:-}

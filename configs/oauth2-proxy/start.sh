@@ -33,19 +33,19 @@ if [ "$HOST" = "localhost" ]; then
   DISCOVERY_URL=$(echo "$DISCOVERY_URL" | sed "s|localhost:${PORT}|${HOST_IP}:${PORT}|")
 fi
 
-echo "Resolved discovery URL: $DISCOVERY_URL"
-echo "Waiting for OIDC discovery endpoint to return HTTP 200..."
+#echo "Resolved discovery URL: $DISCOVERY_URL"
+#echo "Waiting for OIDC discovery endpoint to return HTTP 200..."
 
-while true; do
-  STATUS=$(wget -q --server-response --spider "$DISCOVERY_URL" 2>&1 \
-    | awk '/HTTP\// {print $2}' | tail -1)
+#while true; do
+#  STATUS=$(wget -q --server-response --spider "$DISCOVERY_URL" 2>&1 \
+#    | awk '/HTTP\// {print $2}' | tail -1)
+#
+ # if [ "$STATUS" = "200" ]; then
+  #  echo "OIDC discovery endpoint ready."
+   # break
+  #fi
 
-  if [ "$STATUS" = "200" ]; then
-    echo "OIDC discovery endpoint ready."
-    break
-  fi
-
-  sleep 2
-done
+  sleep 20
+#done
 
 exec /bin/oauth2-proxy

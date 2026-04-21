@@ -1,7 +1,7 @@
 server {
     listen 80;
     server_name _;
-
+    recursive_error_pages on;
     # ----------------------------
     # Error Handling
     # ----------------------------
@@ -41,6 +41,11 @@ server {
         proxy_set_header X-Auth-Request-Redirect $request_uri;
         proxy_set_header Cookie $http_cookie;
     }
+    
+    location @oauth2_signin {
+        return 302 ${APP_ROOT_PATH}/oauth2/start?rd=${APP_ROOT_PATH}$request_uri;
+    }
+
 
     # ----------------------------
     # Frontend Redirect Helpers
@@ -70,10 +75,15 @@ server {
         proxy_pass http://record-manager-statistics/;
     }
 
+    location @auth_unavailable {
+      return 502;
+    }
+
     location ${ANNOTATOR_PATH}/ {
         auth_request /_auth;
-        error_page 401 = /oauth2/start;
-        proxy_pass http://media-asset-annotator/;
+        error_page 401 = @oauth2_signin;
+        error_page 500 = @auth_unavailable;
+	proxy_pass http://media-asset-annotator/;
     }
 
 
@@ -99,7 +109,7 @@ server {
 
     location /services/annotator-server/ {
         auth_request /_auth;
-        error_page 401 = /oauth2/start;
+        error_page 401 = @oauth2_signin;
         proxy_pass ${INTERNAL_ANNOTATOR_SERVER_SERVICE}/annotator-server/;
     }
 
