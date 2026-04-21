@@ -212,7 +212,7 @@ services:
     depends_on:
       - redis
       - postgres
-    restart: on-failure
+    restart: no
     volumes:
       - keycloak-secrets:/secrets
 
