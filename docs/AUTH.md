@@ -1,6 +1,68 @@
-# Authentication Configuration 
+# Authentication Configuration
 
-Authentication is based on **OIDC (OpenID Connect)** and centrally managed by **Keycloak**.
+Authentication is based on **OIDC (OpenID Connect)**, centrally managed by
+**Keycloak**. Keycloak's realm, clients, roles, and groups are provisioned
+by Terraform at deployment time. This gives the stack a working baseline
+out of the box.
+
+## Customizing the Keycloak configuration
+
+Deployment-specific changes (extra users, extra groups, site-specific
+clients) go into a single dedicated file:
+`configs/keycloak-config/customizations.tf`.
+
+**1. Create the file if it doesn't exist.**
+
+```bash
+touch configs/keycloak-config/customizations.tf
+```
+
+**2. Add your custom resources.** For example, to add a default user with a specific role:
+
+```hcl
+resource "keycloak_user" "default_user" {
+  realm_id   = module.realms.realm_id
+  username   = "alice"
+  enabled    = true
+  email      = "alice@example.org"
+  # Set to true to skip email verification step on first login.
+  email_verified = true 
+  first_name = "Alice"
+  last_name  = "Example"
+
+  initial_password {
+    value     = "change-me-on-first-login"
+    # Set to false to not force password change on first login.
+    temporary = false
+  }
+}
+
+# Assign roles to the user.
+resource "keycloak_user_roles" "default_user_roles" {
+  realm_id = module.realms.realm_id
+  user_id  = keycloak_user.default_user.id
+  # Example: assign the "annotator-access-role" from the realm roles.
+  role_ids = [module.roles.realm_role_ids["annotator-access-role"]]
+}
+```
+
+The root Terraform config exposes `module.realms`, `module.clients`,
+`module.roles`, etc. — their outputs are available directly from
+`customizations.tf`.
+
+**3. Re-apply.** From the repository root:
+
+```bash
+docker compose up -d --force-recreate keycloak-config
+```
+
+## External identity providers
+
+In addition to local Keycloak accounts, the stack supports two external
+login options:
+
+- **Google**.
+- **Microsoft Azure**.
 
 ---
 # 1. Google Authentication Setup
@@ -48,5 +110,3 @@ Microsoft login can be configured similarly to Google, but in this deployment it
 It must be configured manually in the Keycloak Admin Console. Follow:
 - [Official Microsoft Guide](https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app)
 - [Keycloak documentation for identity brokers](https://www.keycloak.org/docs/latest/server_admin/index.html#_identity_broker)
-
-
