@@ -65,6 +65,7 @@ services:
       OAUTH2_PROXY_OIDC_LOGOUT_URL: "${PUBLIC_ORIGIN:-http://localhost:${INTERNAL_HOST_PORT:-1235}}${APP_ROOT_PATH:-}/services/auth/realms/record-manager/protocol/openid-connect/logout"
       OAUTH2_PROXY_COOKIE_SAMESITE: "lax"
       OAUTH2_PROXY_COOKIE_HTTPONLY: "true"
+      OAUTH2_PROXY_COOKIE_SECURE: "false"
       OAUTH2_PROXY_UPSTREAMS: static://200
 
   record-manager:

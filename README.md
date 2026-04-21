@@ -82,12 +82,6 @@ The deployment supports two modes:
 - **Domain-based deployment** (`PUBLIC_ORIGIN` defined in `.env`)
 
 ---
-
-> **Note:** Docker Compose merges port lists additively — ports cannot be overridden, only added.
-> For this reason, `nginx` and `mediacms` define no ports in the base `docker-compose.yml`.
-> Ports are defined exclusively in environment-specific override files to avoid binding conflicts.
-
----
 #### 🔹 Quick start with Make
 
 A `Makefile` is provided to simplify running common compose combinations.
@@ -119,6 +113,7 @@ Use this mode when running the stack locally. The `docker-compose.dev.yml` overr
 The `docker-compose.local-oauth.yml` override additionally:
 - Skips OIDC issuer verification
 - Disables secure cookies
+
 ```bash
 make dev-oauth
 ```
@@ -152,6 +147,15 @@ docker compose \
   --env-file .env \
   up --build -d
 ```
+
+#### Important Note ⚠️ 
+
+> In the **base** `docker-compose.yml`, **exposed ports are not defined**.
+> Ports are defined exclusively in environment-specific overrides. Running
+> the **base** compose without an override leaves no ports published and
+> the services will not be reachable from outside the container network.
+> Port definitions live in the environment-specific compose files:
+> `docker-compose.prod.yml` and `docker-compose.dev.yml`.
 
 #### Synchronizing Keycloak Changes
 The keycloak-config (Terraform) container is the source of truth for Keycloak configuration.

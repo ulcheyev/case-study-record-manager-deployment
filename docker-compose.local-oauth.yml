@@ -1,18 +1,25 @@
 services:
-
-  # Allows oauth2-proxy inside Docker to reach services on the host machine
-  # (e.g. a locally running Keycloak on localhost) via the host-gateway alias.
-  # OIDC issuer verification is skipped because the issuer URL seen by the browser
-  # differs from the internal Docker network URL.
-  # Cookie security is disabled since we're running over plain HTTP locally.
+  # Override for oauth2-proxy when PUBLIC_ORIGIN uses the `localhost` hostname.
+  #
+  # When the stack is reached via `localhost` (local development, or any
+  # deployment where the public URL is http://localhost:<port>/...), that
+  # URL is not reachable from inside the oauth2-proxy container.
+  # As a result, automatic OIDC discovery against the public issuer URL
+  # fails, and so would any server-to-server call to Keycloak.
+  #
+  # Workaround:
+  #   - Disable discovery.
+  #   - Skip issuer verification.
+  #   - Disable secure cookies because `localhost` deployments run over HTTP.
+  # This override is not needed when PUBLIC_ORIGIN is a real hostname or IP address.
   oauth2-proxy:
     environment:
-       OAUTH2_PROXY_COOKIE_SECURE: "false"
-       OAUTH2_PROXY_INSECURE_OIDC_SKIP_ISSUER_VERIFICATION: "true"
-       OAUTH2_PROXY_SKIP_OIDC_DISCOVERY: "true"
-    # Browser-facing (stays public):
-       OAUTH2_PROXY_LOGIN_URL: "${PUBLIC_ORIGIN:-http://localhost:${INTERNAL_HOST_PORT:-1235}}${APP_ROOT_PATH:-}/services/auth/realms/record-manager/protocol/openid-connect/auth"
-    # Server-to-server (internal Docker DNS):
-       OAUTH2_PROXY_REDEEM_URL: "http://auth-server:8080/realms/record-manager/protocol/openid-connect/token"
-       OAUTH2_PROXY_OIDC_JWKS_URL: "http://auth-server:8080/realms/record-manager/protocol/openid-connect/certs"
-       OAUTH2_PROXY_PROFILE_URL: "http://auth-server:8080/realms/record-manager/protocol/openid-connect/userinfo"
+      OAUTH2_PROXY_COOKIE_SECURE: "false"
+      OAUTH2_PROXY_INSECURE_OIDC_SKIP_ISSUER_VERIFICATION: "true"
+      OAUTH2_PROXY_SKIP_OIDC_DISCOVERY: "true"
+      # Browser-facing URL (must match what the user types):
+      OAUTH2_PROXY_LOGIN_URL: "${PUBLIC_ORIGIN:-http://localhost:${INTERNAL_HOST_PORT:-1235}}${APP_ROOT_PATH:-}/services/auth/realms/record-manager/protocol/openid-connect/auth"
+      # Server-to-server URLs (internal Docker network):
+      OAUTH2_PROXY_REDEEM_URL: "http://auth-server:8080/realms/record-manager/protocol/openid-connect/token"
+      OAUTH2_PROXY_OIDC_JWKS_URL: "http://auth-server:8080/realms/record-manager/protocol/openid-connect/certs"
+      OAUTH2_PROXY_PROFILE_URL: "http://auth-server:8080/realms/record-manager/protocol/openid-connect/userinfo"
