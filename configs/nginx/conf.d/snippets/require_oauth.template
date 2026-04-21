@@ -1,3 +1,0 @@
-auth_request /_auth;
-error_page 401 = @oauth2_signin;
-error_page 500 = @auth_unavailable;
