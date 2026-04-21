@@ -112,7 +112,7 @@ Use this mode when running the stack locally. The `docker-compose.dev.yml` overr
 
 The `docker-compose.local-oauth.yml` override additionally:
 - Skips OIDC issuer verification
-- Disables secure cookies
+- Disables secure cookies (need if Keycloak is running on `localhost` without TLS)
 
 ```bash
 make dev-oauth

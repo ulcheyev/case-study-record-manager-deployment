@@ -1,16 +1,19 @@
 services:
   # Override for oauth2-proxy when PUBLIC_ORIGIN uses the `localhost` hostname.
+  # And auth is running under http.
   #
   # When the stack is reached via `localhost` (local development, or any
   # deployment where the public URL is http://localhost:<port>/...), that
   # URL is not reachable from inside the oauth2-proxy container.
   # As a result, automatic OIDC discovery against the public issuer URL
-  # fails, and so would any server-to-server call to Keycloak.
+  # fails, and so would any server-to-server call to Keycloak. Also, secure
+  # cookies cannot be used because the public URL is not https.
   #
   # Workaround:
   #   - Disable discovery.
   #   - Skip issuer verification.
   #   - Disable secure cookies because `localhost` deployments run over HTTP.
+  #
   # This override is not needed when PUBLIC_ORIGIN is a real hostname or IP address.
   oauth2-proxy:
     environment:
