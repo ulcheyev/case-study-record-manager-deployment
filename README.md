@@ -15,6 +15,7 @@ The deployment is based on:
   - [1.4 Environment Configuration](#14-environment-configuration)
   - [1.5 Build and Start Services](#15-build-and-start-services)
 2. [Role and Group Management](#2-role-and-group-management)
+3. [User Guides](#3-user-guides)
 
 ---
 
@@ -183,6 +184,9 @@ In order to resolve newly assigned IP addresses after restart, gateway need to b
   - be assigned to a group or
   - roles must be assigned to users to gain access to services
 - Each group contains a predefined set of realm roles.
+
+## 3. User Guides
+- 🔗 [Annotator User Docs](./docs/ANNOTATOR.md) — uploading assets, creating playlists, and accessing the Annotator.
 
 
 
