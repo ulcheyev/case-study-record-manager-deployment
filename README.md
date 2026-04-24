@@ -10,10 +10,9 @@ The deployment is based on:
 
 1. [Deployment Setup](#1-deployment-setup)
   - [1.1 Authentication Configuration](#11-authentication-configuration)
-  - [1.2 Scaling Configuration](#12-scaling-configuration)
-  - [1.3 MediaCMS Configuration](#13-mediacms-configuration)
-  - [1.4 Environment Configuration](#14-environment-configuration)
-  - [1.5 Build and Start Services](#15-build-and-start-services)
+  - [1.2 MediaCMS Configuration](#12-mediacms-configuration)
+  - [1.3 Environment Configuration](#13-environment-configuration)
+  - [1.4 Build and Start Services](#14-build-and-start-services)
 2. [Role and Group Management](#2-role-and-group-management)
 3. [User Guides](#3-user-guides)
 
@@ -37,11 +36,7 @@ Authentication is based on:
 
 ---
 
-### 1.2 MediaCMS Scaling
-Refer to:
-- 🔗 [MediaCMS Scaling Docs](./docs/SCALE.md)
-
-### 1.3 MediaCMS Configuration
+### 1.2 MediaCMS Configuration
 
 The default configuration provides fundamental access.
 
@@ -49,6 +44,7 @@ The default configuration provides fundamental access.
 
 For advanced configuration, refer to:
 - 🔗 [MediaCMS Admin Docs](https://github.com/mediacms-io/mediacms/blob/main/docs/admins_docs.md#5-configuration)
+- 🔗 [MediaCMS Scaling Docs](./docs/SCALE.md)
 
 **Important**:
 - Users must have appropriate roles assigned in Keycloak.
@@ -56,7 +52,7 @@ For advanced configuration, refer to:
 
 ---
 
-### 1.4 Environment Configuration
+### 1.3 Environment Configuration
 
 Configure environment variables before starting the deployment.
 
@@ -75,7 +71,7 @@ Then configure the following (⚠️ Important):
 
 ---
 
-### 1.5 Build and Start Services
+### 1.4 Build and Start Services
 
 The deployment supports two modes:
 
