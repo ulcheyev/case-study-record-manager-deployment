@@ -11,11 +11,7 @@ Deployment-specific changes (extra users, extra groups, site-specific
 clients) go into a single dedicated file:
 `configs/keycloak-config/customizations.tf`.
 
-**1. Create the file if it doesn't exist.**
 
-```bash
-touch configs/keycloak-config/customizations
-```
 **2. Add your custom resources.** For example, to add a default user with a specific role:
 
 ```hcl

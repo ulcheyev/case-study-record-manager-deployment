@@ -34,6 +34,15 @@ echo "$ANNOTATOR_SECRET" > /secrets/annotator_client_secret
 head -c 32 /dev/urandom | base64 | head -c 32 > /secrets/oauth2_cookie_secret
 
 # ------------------------------------------------------------------
+# Customizations
+# ------------------------------------------------------------------
+cd /workspace/customizations
+terraform init -backend=false
+export TF_VAR_realm_id="$KC_REALM"
+terraform apply -parallelism=4 -auto-approve
+echo "=== Customizations applied ==="
+
+# ------------------------------------------------------------------
 # Dev configuration (dev environment only)
 # ------------------------------------------------------------------
 if [ "$ENV" = "dev" ]; then
@@ -45,18 +54,6 @@ if [ "$ENV" = "dev" ]; then
   echo "=== Dev config applied ==="
 fi
 
-# ------------------------------------------------------------------
-# Customizations
-# ------------------------------------------------------------------
-if [ -d /workspace/customizations ] && [ -n "$(ls -A /workspace/customizations/*.tf 2>/dev/null)" ]; then
-  echo "=== Customizations detected, applying... ==="
-  cd /workspace/customizations
-  terraform init -backend=false
-  export TF_VAR_realm_id="$KC_REALM"
-  terraform apply -parallelism=4 -auto-approve
-  echo "=== Customizations applied ==="
-else
-  echo "No customizations found, skipping."
-fi
-
 echo "Keycloak configuration complete."
+
+
