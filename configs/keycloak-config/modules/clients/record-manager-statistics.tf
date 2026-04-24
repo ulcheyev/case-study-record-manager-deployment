@@ -16,7 +16,7 @@ resource "keycloak_openid_client" "record_manager_statistics" {
   base_url = var.public_origin
 
   valid_redirect_uris = [
-    "${var.public_origin}${var.rm_base_path}/statistics/*"
+    "${var.public_origin}${var.base_path}${var.rm_base_path}/statistics*"
   ]
 
   valid_post_logout_redirect_uris = [

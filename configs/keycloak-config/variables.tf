@@ -34,8 +34,12 @@ variable "public_origin" {
   type = string
 }
 
+variable "base_path" {
+  type = string
+}
+
 variable "rm_base_path" {
-  type      = string
+  type = string
 }
 
 variable "enable_google_login" {

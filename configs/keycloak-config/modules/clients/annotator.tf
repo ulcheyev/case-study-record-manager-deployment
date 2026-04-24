@@ -11,8 +11,11 @@
    direct_access_grants_enabled  = false
    service_accounts_enabled      = false
 
+   root_url = var.public_origin
+   base_url = var.public_origin
+
    valid_redirect_uris = [
-     "${var.public_origin}/oauth2/callback"
+     "${var.public_origin}${var.base_path}/oauth2/callback*"
    ]
 
    valid_post_logout_redirect_uris = [

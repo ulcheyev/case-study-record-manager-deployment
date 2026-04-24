@@ -11,8 +11,8 @@ services:
       OAUTH2_PROXY_AUTH_REQUIRED: "false"
 
   oauth2-proxy:
-    environment:
-      OAUTH2_PROXY_LOG_LEVEL: "debug"
+    entrypoint: [ "/bin/true" ]
+    restart: "no"
 
   media-asset-annotator-server:
     environment:
