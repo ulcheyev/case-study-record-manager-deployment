@@ -11,6 +11,9 @@ until wget -qO- "http://${AUTH_SERVER_HOSTNAME}:${AUTH_SERVER_PORT}/realms/maste
 done
 echo "Keycloak is ready."
 
+# ------------------------------------------------------------------
+# Main configuration: realm, clients, roles, groups, scopes, events
+# ------------------------------------------------------------------
 cd /workspace
 terraform init
 
@@ -30,7 +33,10 @@ echo "$MEDIACMS_SECRET" > /secrets/mediacms_client_secret
 echo "$ANNOTATOR_SECRET" > /secrets/annotator_client_secret
 head -c 32 /dev/urandom | base64 | head -c 32 > /secrets/oauth2_cookie_secret
 
-if [ "$ENV" = "dev"  ]; then
+# ------------------------------------------------------------------
+# Dev configuration (dev environment only)
+# ------------------------------------------------------------------
+if [ "$ENV" = "dev" ]; then
   echo "=== Dev config detected, applying... ==="
   cd /workspace/dev
   terraform init -backend=false
@@ -38,3 +44,19 @@ if [ "$ENV" = "dev"  ]; then
   terraform apply -parallelism=4 -auto-approve
   echo "=== Dev config applied ==="
 fi
+
+# ------------------------------------------------------------------
+# Customizations
+# ------------------------------------------------------------------
+if [ -d /workspace/customizations ] && [ -n "$(ls -A /workspace/customizations/*.tf 2>/dev/null)" ]; then
+  echo "=== Customizations detected, applying... ==="
+  cd /workspace/customizations
+  terraform init -backend=false
+  export TF_VAR_realm_id="$KC_REALM"
+  terraform apply -parallelism=4 -auto-approve
+  echo "=== Customizations applied ==="
+else
+  echo "No customizations found, skipping."
+fi
+
+echo "Keycloak configuration complete."

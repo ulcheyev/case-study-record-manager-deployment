@@ -14,35 +14,34 @@ clients) go into a single dedicated file:
 **1. Create the file if it doesn't exist.**
 
 ```bash
-touch configs/keycloak-config/customizations.tf
+touch configs/keycloak-config/customizations
 ```
-
 **2. Add your custom resources.** For example, to add a default user with a specific role:
 
 ```hcl
 resource "keycloak_user" "default_user" {
-  realm_id   = module.realms.realm_id
-  username   = "alice"
-  enabled    = true
-  email      = "alice@example.org"
-  # Set to true to skip email verification step on first login.
-  email_verified = true 
-  first_name = "Alice"
-  last_name  = "Example"
+  realm_id       = var.realm_id
+  username       = "alice"
+  enabled        = true
+  email          = "alice@example.org"
+  email_verified = true
+  first_name     = "Alice"
+  last_name      = "Example"
 
   initial_password {
     value     = "alice"
-    # Set to false to not force password change on first login.
     temporary = false
   }
 }
+data "keycloak_group" "default_user_group" {
+  realm_id = var.realm_id
+  name     = "entry-clerk-role-group"
+}
 
-# Assign roles to the user.
-resource "keycloak_user_roles" "default_user_roles" {
-  realm_id = module.realms.realm_id
-  user_id  = keycloak_user.default_user.id
-  # Example: assign the "annotator-access-role" from the realm roles.
-  role_ids = [module.roles.realm_role_ids["annotator-access-role"]]
+resource "keycloak_user_groups" "default_user_groups" {
+  realm_id  = var.realm_id
+  user_id   = keycloak_user.default_user.id
+  group_ids = [data.keycloak_group.default_user_group.id]
 }
 ```
 

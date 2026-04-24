@@ -43,8 +43,8 @@ The default configuration provides fundamental access.
 - **Configuration directory**: `configs/mediacms`
 
 For advanced configuration, refer to:
-- 🔗 [MediaCMS Admin Docs](https://github.com/mediacms-io/mediacms/blob/main/docs/admins_docs.md#5-configuration)
 - 🔗 [MediaCMS Scaling Docs](./docs/SCALE.md)
+- 🔗 [MediaCMS Admin Docs](https://github.com/mediacms-io/mediacms/blob/main/docs/admins_docs.md#5-configuration)
 
 **Important**:
 - Users must have appropriate roles assigned in Keycloak.
