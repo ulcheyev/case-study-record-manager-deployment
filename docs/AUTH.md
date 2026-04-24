@@ -4,15 +4,15 @@ Authentication is based on **OIDC (OpenID Connect)**, centrally managed by
 **Keycloak**. Keycloak's realm, clients, roles, and groups are provisioned
 by Terraform at deployment time. This gives the stack a working baseline
 out of the box.
-
 ## Customizing the Keycloak configuration
 
 Deployment-specific changes (extra users, extra groups, site-specific
-clients) go into a single dedicated file:
-`configs/keycloak-config/customizations.tf`.
+clients) go into a dedicated directory:
+`configs/keycloak-config/customizations/`. It is applied as a separate
+Terraform root after the main configuration.
 
-
-**2. Add your custom resources.** For example, to add a default user with a specific role:
+**1. Create a resource file.** For example, `resources.tf` to add a default
+user assigned to the entry clerk role group:
 
 ```hcl
 resource "keycloak_user" "default_user" {
@@ -29,6 +29,7 @@ resource "keycloak_user" "default_user" {
     temporary = false
   }
 }
+
 data "keycloak_group" "default_user_group" {
   realm_id = var.realm_id
   name     = "entry-clerk-role-group"
@@ -41,11 +42,16 @@ resource "keycloak_user_groups" "default_user_groups" {
 }
 ```
 
-The root Terraform config exposes `module.realms`, `module.clients`,
-`module.roles`, etc. — their outputs are available directly from
-`customizations.tf`.
+The customizations root exposes `var.realm_id`. Existing Keycloak resources
+(roles, groups, clients) can be referenced through `data` sources as shown
+above.
 
-**3. Deploy/Re-apply.** To re-apply from the repository root:
+### How variables are wired
+The customizations root declares its own `variables.tf` with the same
+variables from `/config/keycloak-config/variables.tf` it needs.
+To add a new input, declare it in `customizations/variables.tf`.
+
+**2. Deploy/Re-apply.** To re-apply from the repository root:
 
 ```bash
 docker compose up -d --force-recreate keycloak-config
