@@ -12,7 +12,7 @@ resource "keycloak_openid_client" "mediacms" {
   service_accounts_enabled      = false
 
   valid_redirect_uris = [
-    "${var.mediacms_base_url}/accounts/oidc/keycloak/login/callback/"
+    "${var.mediacms_base_url}/accounts/oidc/keycloak/login/callback*"
   ]
 
   valid_post_logout_redirect_uris = [
