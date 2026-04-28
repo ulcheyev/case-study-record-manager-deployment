@@ -11,7 +11,7 @@
 .terraform/
 .terraform.lock.hcl
 configs/keycloak-config/core
-
+configs/keycloak-config/customizations/resources.tf
 # Mac
 .DS_Store
 

@@ -10,11 +10,11 @@ The deployment is based on:
 
 1. [Deployment Setup](#1-deployment-setup)
   - [1.1 Authentication Configuration](#11-authentication-configuration)
-  - [1.2 Scaling Configuration](#12-scaling-configuration)
-  - [1.3 MediaCMS Configuration](#13-mediacms-configuration)
-  - [1.4 Environment Configuration](#14-environment-configuration)
-  - [1.5 Build and Start Services](#15-build-and-start-services)
+  - [1.2 MediaCMS Configuration](#12-mediacms-configuration)
+  - [1.3 Environment Configuration](#13-environment-configuration)
+  - [1.4 Build and Start Services](#14-build-and-start-services)
 2. [Role and Group Management](#2-role-and-group-management)
+3. [User Guides](#3-user-guides)
 
 ---
 
@@ -36,17 +36,14 @@ Authentication is based on:
 
 ---
 
-### 1.2 MediaCMS Scaling
-Refer to:
-- 🔗 [MediaCMS Scaling Docs](./docs/SCALE.md)
-
-### 1.3 MediaCMS Configuration
+### 1.2 MediaCMS Configuration
 
 The default configuration provides fundamental access.
 
 - **Configuration directory**: `configs/mediacms`
 
 For advanced configuration, refer to:
+- 🔗 [MediaCMS Scaling Docs](./docs/SCALE.md)
 - 🔗 [MediaCMS Admin Docs](https://github.com/mediacms-io/mediacms/blob/main/docs/admins_docs.md#5-configuration)
 
 **Important**:
@@ -55,7 +52,7 @@ For advanced configuration, refer to:
 
 ---
 
-### 1.4 Environment Configuration
+### 1.3 Environment Configuration
 
 Configure environment variables before starting the deployment.
 
@@ -74,18 +71,12 @@ Then configure the following (⚠️ Important):
 
 ---
 
-### 1.5 Build and Start Services
+### 1.4 Build and Start Services
 
 The deployment supports two modes:
 
 - **Local development** 
 - **Domain-based deployment** (`PUBLIC_ORIGIN` defined in `.env`)
-
----
-
-> **Note:** Docker Compose merges port lists additively — ports cannot be overridden, only added.
-> For this reason, `nginx` and `mediacms` define no ports in the base `docker-compose.yml`.
-> Ports are defined exclusively in environment-specific override files to avoid binding conflicts.
 
 ---
 #### 🔹 Quick start with Make
@@ -118,7 +109,8 @@ Use this mode when running the stack locally. The `docker-compose.dev.yml` overr
 
 The `docker-compose.local-oauth.yml` override additionally:
 - Skips OIDC issuer verification
-- Disables secure cookies
+- Disables secure cookies (need if Keycloak is running on `localhost` without TLS)
+
 ```bash
 make dev-oauth
 ```
@@ -153,6 +145,15 @@ docker compose \
   up --build -d
 ```
 
+#### Important Note ⚠️ 
+
+> In the **base** `docker-compose.yml`, **exposed ports are not defined**.
+> Ports are defined exclusively in environment-specific overrides. Running
+> the **base** compose without an override leaves no ports published and
+> the services will not be reachable from outside the container network.
+> Port definitions live in the environment-specific compose files:
+> `docker-compose.prod.yml` and `docker-compose.dev.yml`.
+
 #### Synchronizing Keycloak Changes
 The keycloak-config (Terraform) container is the source of truth for Keycloak configuration.
 Manual changes made in the Keycloak Admin UI may be overwritten by Terraform configuration during the next application restart.
@@ -179,6 +180,9 @@ In order to resolve newly assigned IP addresses after restart, gateway need to b
   - be assigned to a group or
   - roles must be assigned to users to gain access to services
 - Each group contains a predefined set of realm roles.
+
+## 3. User Guides
+- 🔗 [Annotator User Docs](./docs/ANNOTATOR.md) — uploading assets, creating playlists, and accessing the Annotator.
 
 
 

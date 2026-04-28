@@ -1,6 +1,69 @@
-# Authentication Configuration 
+# Authentication Configuration
 
-Authentication is based on **OIDC (OpenID Connect)** and centrally managed by **Keycloak**.
+Authentication is based on **OIDC (OpenID Connect)**, centrally managed by
+**Keycloak**. Keycloak's realm, clients, roles, and groups are provisioned
+by Terraform at deployment time. This gives the stack a working baseline
+out of the box.
+## Customizing the Keycloak configuration
+
+Deployment-specific changes (extra users, extra groups, site-specific
+clients) go into a dedicated directory:
+`configs/keycloak-config/customizations/`. It is applied as a separate
+Terraform root after the main configuration.
+
+**1. Create a resource file.** For example, `resources.tf` to add a default
+user assigned to the entry clerk role group:
+
+```hcl
+resource "keycloak_user" "default_user" {
+  realm_id       = var.realm_id
+  username       = "alice"
+  enabled        = true
+  email          = "alice@example.org"
+  email_verified = true
+  first_name     = "Alice"
+  last_name      = "Example"
+
+  initial_password {
+    value     = "alice"
+    temporary = false
+  }
+}
+
+data "keycloak_group" "default_user_group" {
+  realm_id = var.realm_id
+  name     = "entry-clerk-role-group"
+}
+
+resource "keycloak_user_groups" "default_user_groups" {
+  realm_id  = var.realm_id
+  user_id   = keycloak_user.default_user.id
+  group_ids = [data.keycloak_group.default_user_group.id]
+}
+```
+
+The customizations root exposes `var.realm_id`. Existing Keycloak resources
+(roles, groups, clients) can be referenced through `data` sources as shown
+above.
+
+### How variables are wired
+The customizations root declares its own `variables.tf` with the same
+variables from `/config/keycloak-config/variables.tf` it needs.
+To add a new input, declare it in `customizations/variables.tf`.
+
+**2. Deploy/Re-apply.** To re-apply from the repository root:
+
+```bash
+docker compose up -d --force-recreate keycloak-config
+```
+
+## External identity providers
+
+In addition to local Keycloak accounts, the stack supports two external
+login options:
+
+- **Google**.
+- **Microsoft Azure**.
 
 ---
 # 1. Google Authentication Setup
@@ -48,5 +111,3 @@ Microsoft login can be configured similarly to Google, but in this deployment it
 It must be configured manually in the Keycloak Admin Console. Follow:
 - [Official Microsoft Guide](https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app)
 - [Keycloak documentation for identity brokers](https://www.keycloak.org/docs/latest/server_admin/index.html#_identity_broker)
-
-

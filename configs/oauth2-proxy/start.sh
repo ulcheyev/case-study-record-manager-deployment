@@ -8,44 +8,18 @@ echo "Waiting for secrets..."
 while [ ! -s "$SECRET_FILE" ] || [ ! -s "$COOKIE_SECRET_FILE" ]; do
   sleep 1
 done
-
 echo "Secrets injected."
 
 export OAUTH2_PROXY_CLIENT_SECRET="$(cat $SECRET_FILE)"
 export OAUTH2_PROXY_COOKIE_SECRET="$(cat $COOKIE_SECRET_FILE)"
 
+KC_REALM="${KC_REALM:-record-manager}"
+DISCOVERY_URL="http://auth-server:8080/realms/${KC_REALM}/.well-known/openid-configuration"
 
-echo "Waiting for keycloak authorization server running ..."
-DISCOVERY_PATH="/.well-known/openid-configuration"
-
-ISSUER_URL="${OAUTH2_PROXY_OIDC_ISSUER_URL}"
-DISCOVERY_URL="${ISSUER_URL}${DISCOVERY_PATH}"
-
-echo "Original issuer URL: $ISSUER_URL"
-
-# Extract host part
-HOST=$(echo "$ISSUER_URL" | awk -F[/:] '{print $4}')
-PORT=$(echo "$ISSUER_URL" | awk -F[/:] '{print $5}')
-
-# If host is localhost, replace with host-gateway IP
-if [ "$HOST" = "localhost" ]; then
-  HOST_IP=$(grep 'localhost$' /etc/hosts | awk '{print $1}' | tail -1)
-  DISCOVERY_URL=$(echo "$DISCOVERY_URL" | sed "s|localhost:${PORT}|${HOST_IP}:${PORT}|")
-fi
-
-echo "Resolved discovery URL: $DISCOVERY_URL"
-echo "Waiting for OIDC discovery endpoint to return HTTP 200..."
-
-while true; do
-  STATUS=$(wget -q --server-response --spider "$DISCOVERY_URL" 2>&1 \
-    | awk '/HTTP\// {print $2}' | tail -1)
-
-  if [ "$STATUS" = "200" ]; then
-    echo "OIDC discovery endpoint ready."
-    break
-  fi
-
-  sleep 2
+echo "Waiting for Keycloak realm at ${DISCOVERY_URL}..."
+until wget -qO- "${DISCOVERY_URL}" > /dev/null 2>&1; do
+  sleep 5
 done
+echo "Keycloak realm is ready."
 
 exec /bin/oauth2-proxy

@@ -1,13 +1,15 @@
 server {
-    listen 80;
+    listen      80;
     server_name _;
 
-    # ----------------------------
-    # Error Handling
-    # ----------------------------
+    # Ensure that error pages are processed by nginx and not bypassed by the browser
+    recursive_error_pages on;
 
-    error_page 400 401 402 403 404 405 406 407 408 409 410 411 412 413 414
-               415 416 417 418 421 422 423 424 426 428 429 431 451
+    # ------------------------------------------------------------------
+    # Error pages
+    # ------------------------------------------------------------------
+    error_page 400 401 402 403 404 405 406 407 408 409 410 411 412 413
+               414 415 416 417 418 421 422 423 424 426 428 429 431 451
                500 501 502 503 504 505 506 507 508 510 511 /error.html;
 
     location = /error.html {
@@ -16,52 +18,52 @@ server {
         root /usr/share/nginx/html;
     }
 
-    # ----------------------------
-    # OAuth2 Auth Handling
-    # ----------------------------
-
+    # ------------------------------------------------------------------
+    # Auth (oauth2-proxy subrequests and endpoints)
+    # ------------------------------------------------------------------
     location = /_auth {
-        if ($auth_enabled = 0) {
-            return 200;
-        }
+        internal;
 
-        proxy_pass http://oauth2-proxy:4180/oauth2/auth;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        if ($auth_enabled = 0) {
+           return 200;
+        }
+        # oauth2-proxy isn't needed at nginx-startup time.
+        # If it isn't available, return 502/503 instead of failing to start nginx.
+        resolver 127.0.0.11 valid=10s ipv6=off;
+        set $oauth2_upstream "http://oauth2-proxy:4180/oauth2/auth";
+        proxy_pass $oauth2_upstream;
+        include conf.d/snippets/proxy_headers.conf;
     }
 
     location /oauth2/ {
-        proxy_pass http://oauth2-proxy:4180;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Scheme $scheme;
-        proxy_set_header X-Forwarded-Proto $scheme;
+        resolver 127.0.0.11 valid=10s ipv6=off;
+        set $oauth2_upstream "http://oauth2-proxy:4180";
+        proxy_pass $oauth2_upstream;
+        include conf.d/snippets/proxy_headers.conf;
         proxy_set_header X-Auth-Request-Redirect $request_uri;
         proxy_set_header Cookie $http_cookie;
     }
 
-    # ----------------------------
-    # Frontend Redirect Helpers
-    # ----------------------------
-
-    location = ${RECORD_MANAGER_PATH} {
-        return 302 ${APP_ORIGIN}${APP_ROOT_PATH}${RECORD_MANAGER_PATH}/;
+    location @oauth2_signin {
+        return 302 ${APP_ROOT_PATH}/oauth2/start?rd=${APP_ROOT_PATH}$request_uri;
     }
 
-    location = ${ANNOTATOR_PATH} {
-        return 302 ${APP_ORIGIN}${APP_ROOT_PATH}${ANNOTATOR_PATH}/;
+    location @auth_unavailable {
+        return 502;
     }
 
-    location = ${ANALYTICS_PATH} {
-        return 302 ${APP_ORIGIN}${APP_ROOT_PATH}${ANALYTICS_PATH}/;
-    }
+    # ------------------------------------------------------------------
+    # Trailing-slash redirects
+    # ------------------------------------------------------------------
+    location = ${RECORD_MANAGER_PATH} { return 302 ${APP_ORIGIN}${APP_ROOT_PATH}${RECORD_MANAGER_PATH}/; }
+    location = ${ANNOTATOR_PATH}      { return 302 ${APP_ORIGIN}${APP_ROOT_PATH}${ANNOTATOR_PATH}/; }
+    location = ${ANALYTICS_PATH}      { return 302 ${APP_ORIGIN}${APP_ROOT_PATH}${ANALYTICS_PATH}/; }
+    location = /services/auth         { return 302 ${APP_ORIGIN}${APP_ROOT_PATH}/services/auth/; }
+    location = /services/db-server    { return 302 ${APP_ORIGIN}${APP_ROOT_PATH}/services/db-server/; }
 
-    # ----------------------------
-    # Frontend Applications
-    # ----------------------------
-
+    # ------------------------------------------------------------------
+    # Frontend applications
+    # ------------------------------------------------------------------
     location ${RECORD_MANAGER_PATH}/ {
         proxy_pass http://record-manager/;
     }
@@ -71,86 +73,61 @@ server {
     }
 
     location ${ANNOTATOR_PATH}/ {
-        auth_request /_auth;
-        error_page 401 = /oauth2/start;
+        include    conf.d/snippets/require_oauth.conf;
         proxy_pass http://media-asset-annotator/;
     }
 
-
-    # ----------------------------
-    # Backend Services
-    # ----------------------------
-
-
-    location /services/mediacms/ {
-        return 302 ${MEDIA_CMS_URL};
-    }
-
-
+    # ------------------------------------------------------------------
+    # Backend services
+    # ------------------------------------------------------------------
     location /services/record-manager-server/ {
-        proxy_pass ${INTERNAL_RECORD_MANAGER_SERVER_SERVICE}/record-manager/;
+        proxy_pass        ${INTERNAL_RECORD_MANAGER_SERVER_SERVICE}/record-manager/;
         proxy_cookie_path /record-manager ${APP_ROOT_PATH}/services;
     }
 
     location /services/statistics-server/ {
-        proxy_pass ${INTERNAL_RECORD_MANAGER_STATISTICS_SERVER_SERVICE}/statistics-server/;
+        proxy_pass        ${INTERNAL_RECORD_MANAGER_STATISTICS_SERVER_SERVICE}/statistics-server/;
         proxy_cookie_path /record-manager ${APP_ROOT_PATH}/services;
     }
 
     location /services/annotator-server/ {
-        auth_request /_auth;
-        error_page 401 = /oauth2/start;
+        include    conf.d/snippets/require_oauth.conf;
         proxy_pass ${INTERNAL_ANNOTATOR_SERVER_SERVICE}/annotator-server/;
-    }
-
-    location = /services/db-server {
-        return 302 ${APP_ORIGIN}${APP_ROOT_PATH}/services/db-server/;
-    }
-
-    location /services/db-server/ {
-        proxy_pass http://db-server:7200/;
-        proxy_set_header Host $host;
-         # Ensure Location headers are rewritten properly as X-Forwarded-Port is ignored
-        proxy_redirect http://localhost/ ${APP_ORIGIN}/services/db-server/;
     }
 
     location /services/s-pipes/ {
         proxy_pass ${INTERNAL_SPIPES_ENGINE_SERVICE}/s-pipes/;
     }
 
-    location = /services/auth {
-        return 302 ${APP_ORIGIN}${APP_ROOT_PATH}/services/auth/;
+    location /services/db-server/ {
+        proxy_pass     http://db-server:7200/;
+        proxy_redirect http://localhost/ ${APP_ORIGIN}/services/db-server/;
+        include        conf.d/snippets/proxy_headers.conf;
     }
 
     location /services/auth/ {
         proxy_pass http://auth-server:8080/;
-
-        proxy_set_header Host $host;
-        proxy_set_header X-Forwarded-Host $host;
-        proxy_set_header X-Forwarded-Port $http_x_forwarded_port;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header Cookie $http_cookie;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-
-        # Increase buffer sizes to handle large headers sent by Keycloak and its clients
-        proxy_buffer_size 128k;
-        proxy_buffers 4 256k;
-        proxy_busy_buffers_size 256k;
+        include    conf.d/snippets/proxy_headers_auth.conf;
     }
 
-    # ----------------------------
-    # Static / Misc
-    # ----------------------------
+    # ------------------------------------------------------------------
+    # External redirects
+    # ------------------------------------------------------------------
+    location /services/mediacms/ {
+        return 302 ${MEDIA_CMS_URL};
+    }
 
+    # ------------------------------------------------------------------
+    # Static content and health
+    # ------------------------------------------------------------------
     location /health-check {
-        return 200;
         access_log off;
+        return 200;
     }
 
     location / {
-        index index.html;
+        root      /usr/share/nginx/html;
+        index     index.html;
         try_files $uri $uri/ /index.html;
-        root /usr/share/nginx/html;
     }
 }
