@@ -115,6 +115,7 @@ def prod_config():
         "LOGIN_URL": "/accounts/oidc/keycloak/login/",
         "LOGIN_REDIRECT_URL": "/",
         "LOGOUT_REDIRECT_URL": "/accounts/oidc/keycloak/login/",
+        "CSRF_TRUSTED_ORIGINS": [os.getenv('FRONTEND_HOST', 'http://localhost')],
         "INSTALLED_APPS": INSTALLED_APPS + [
             "allauth.socialaccount.providers.openid_connect",
         ],
@@ -141,7 +142,7 @@ def prod_config():
         "MEDIACMS_REQUIRED_ROLE": os.getenv(
             "MEDIACMS_REQUIRED_ROLE",
             "mediacms-access-role"
-        )
+        ),
     }
 
 
