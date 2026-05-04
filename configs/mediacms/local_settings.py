@@ -102,12 +102,11 @@ def prod_config():
     print("[local_settings] Running in PROD mode")
 
     oidc_secret = read_secret()
-
+    is_https = FRONTEND_HOST.startswith("https")
     middleware = list(MIDDLEWARE)
     if 'deploy.docker.protected_media.ProtectedMediaMiddleware' not in middleware:
         middleware.append('deploy.docker.protected_media.ProtectedMediaMiddleware')
-
-    return {
+    config = {
         "DEBUG": os.getenv('DEBUG', 'False') == 'True',
         "USE_IDENTITY_PROVIDERS": True,
         "USE_RBAC": True,
@@ -144,7 +143,10 @@ def prod_config():
             "mediacms-access-role"
         ),
     }
+    if is_https:
+        config["SECURE_PROXY_SSL_HEADER"] = ("HTTP_X_FORWARDED_PROTO", "https")
 
+    return config
 
 # ========================
 # PROFILE DISPATCH
