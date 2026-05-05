@@ -11,6 +11,9 @@ resource "keycloak_openid_client" "mediacms" {
   direct_access_grants_enabled  = false
   service_accounts_enabled      = false
 
+   root_url = var.mediacms_base_url
+   base_url = var.mediacms_base_url
+
   valid_redirect_uris = [
     "${var.mediacms_base_url}/accounts/oidc/keycloak/login/callback*"
   ]

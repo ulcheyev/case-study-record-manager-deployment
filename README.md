@@ -43,6 +43,7 @@ The default configuration provides fundamental access.
 - **Configuration directory**: `configs/mediacms`
 
 For advanced configuration, refer to:
+- 🔗 [MediaCMS Networking Docs](./docs/MEDIACMS-RPROXY)
 - 🔗 [MediaCMS Scaling Docs](./docs/SCALE.md)
 - 🔗 [MediaCMS Admin Docs](https://github.com/mediacms-io/mediacms/blob/main/docs/admins_docs.md#5-configuration)
 

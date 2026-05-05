@@ -102,12 +102,11 @@ def prod_config():
     print("[local_settings] Running in PROD mode")
 
     oidc_secret = read_secret()
-
+    is_https = FRONTEND_HOST.startswith("https")
     middleware = list(MIDDLEWARE)
     if 'deploy.docker.protected_media.ProtectedMediaMiddleware' not in middleware:
         middleware.append('deploy.docker.protected_media.ProtectedMediaMiddleware')
-
-    return {
+    config = {
         "DEBUG": os.getenv('DEBUG', 'False') == 'True',
         "USE_IDENTITY_PROVIDERS": True,
         "USE_RBAC": True,
@@ -115,6 +114,7 @@ def prod_config():
         "LOGIN_URL": "/accounts/oidc/keycloak/login/",
         "LOGIN_REDIRECT_URL": "/",
         "LOGOUT_REDIRECT_URL": "/accounts/oidc/keycloak/login/",
+        "CSRF_TRUSTED_ORIGINS": [os.getenv('FRONTEND_HOST', 'http://localhost')],
         "INSTALLED_APPS": INSTALLED_APPS + [
             "allauth.socialaccount.providers.openid_connect",
         ],
@@ -141,9 +141,12 @@ def prod_config():
         "MEDIACMS_REQUIRED_ROLE": os.getenv(
             "MEDIACMS_REQUIRED_ROLE",
             "mediacms-access-role"
-        )
+        ),
     }
+    if is_https:
+        config["SECURE_PROXY_SSL_HEADER"] = ("HTTP_X_FORWARDED_PROTO", "https")
 
+    return config
 
 # ========================
 # PROFILE DISPATCH
