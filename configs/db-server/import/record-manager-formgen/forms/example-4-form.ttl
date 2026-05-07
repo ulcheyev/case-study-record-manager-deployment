@@ -100,7 +100,7 @@ leaves:asset-linden a form-media:asset ;
 leaves:q-fern a doc:question ;
     rdfs:label "Identify this tree or leaf." ;
     form:has-question-origin leaves:q-fern-qo ;
-    form-lt:has-layout-class "typeahead" ;
+    form-lt:has-layout-class "type-ahead" ;
     form:has-possible-value leaves:leaf-fern-pinnate ,
         leaves:leaf-fern-palmate ,
         leaves:plant-horsetail ,
@@ -119,6 +119,13 @@ leaves:q-image-quality-feedback a doc:question ;
     form-lt:has-layout-class "text" ;
     form:has-question-origin leaves:q-image-quality-feedback-qo .
 
+
+# === Order of questions ===
+leaves:q-maple form:has-preceding-question leaves:q-oak .
+leaves:q-birch form:has-preceding-question leaves:q-maple .
+leaves:q-linden form:has-preceding-question leaves:q-birch .
+leaves:q-fern form:has-preceding-question leaves:q-linden .
+leaves:q-image-quality-feedback form:has-preceding-question leaves:q-fern .
 
 # === Answer values (labels) ===
 
