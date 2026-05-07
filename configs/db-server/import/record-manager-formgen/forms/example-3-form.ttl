@@ -21,7 +21,6 @@ leaves:form-root a doc:question ;
         leaves:q-oak ,
         leaves:q-birch ,
         leaves:q-linden ,
-        leaves:q-beech ,
         leaves:q-image-quality-feedback ;
     form-lt:has-layout-class "form" ;
     form:has-question-origin leaves:form-root-qo .
