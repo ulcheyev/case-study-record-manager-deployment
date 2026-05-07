@@ -15,7 +15,7 @@
 leaves:form-root a doc:question ;
     a form:form-template ;
     dcterms:hasVersion <https://example.org/sfc-leaves-learning/form-root/0.0.1> ;
-    rdfs:label "Tree Identification by Leaf Shape - Learning Mode" ;
+    rdfs:label "Tree Identification by Leaf Shape - Learning" ;
     rdfs:comment "Learning form: identify 4 tree species from leaf images, with annotations and correct-answer hints." ;
     doc:has_related_question leaves:q-maple ,
         leaves:q-oak ,
@@ -112,7 +112,7 @@ leaves:annotation-oak-2 a form-media:annotation ;
 leaves:q-birch a doc:question ;
     rdfs:label "Which tree does this leaf belong to?" ;
     form:has-question-origin leaves:q-birch-qo ;
-    form-lt:has-layout-class "typehead" ;
+    form-lt:has-layout-class "type-ahead" ;
     form:has-possible-value leaves:tree-birch ,
         leaves:tree-alder ,
         leaves:tree-hazel ,
@@ -162,7 +162,7 @@ leaves:annotation-birch-3 a form-media:annotation ;
 leaves:q-linden a doc:question ;
     rdfs:label "Which tree does this leaf belong to?" ;
     form:has-question-origin leaves:q-linden-qo ;
-    form-lt:has-layout-class "typehead" ;
+    form-lt:has-layout-class "type-ahead" ;
     form:has-possible-value leaves:tree-linden ,
         leaves:tree-mulberry ,
         leaves:tree-aspen ,

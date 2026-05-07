@@ -15,7 +15,7 @@
 leaves:form-root a doc:question ;
     a form:form-template ;
     dcterms:hasVersion <https://example.org/sfc-leaves-testing/form-root/0.0.1> ;
-    rdfs:label "Tree Identification by Leaf Shape - Testing Mode" ;
+    rdfs:label "Tree Identification by Leaf Shape - Testing" ;
     rdfs:comment "Testing form: identify 5 tree/leaf specimens from images, no annotations or hints." ;
     doc:has_related_question leaves:q-maple ,
         leaves:q-oak ,
@@ -32,7 +32,7 @@ leaves:form-root a doc:question ;
 leaves:q-maple a doc:question ;
     rdfs:label "Identify this tree or leaf." ;
     form:has-question-origin leaves:q-maple-qo ;
-    form-lt:has-layout-class "typehead" ;
+    form-lt:has-layout-class "type-ahead" ;
     form:has-possible-value leaves:tree-maple ,
         leaves:tree-horse-chestnut ,
         leaves:tree-plane ,
@@ -49,7 +49,7 @@ leaves:asset-maple a form-media:asset ;
 leaves:q-oak a doc:question ;
     rdfs:label "Identify this tree or leaf." ;
     form:has-question-origin leaves:q-oak-qo ;
-    form-lt:has-layout-class "typehead" ;
+    form-lt:has-layout-class "type-ahead" ;
     form:has-possible-value leaves:tree-oak ,
         leaves:tree-hawthorn ,
         leaves:tree-hornbeam ,
@@ -83,7 +83,7 @@ leaves:asset-birch a form-media:asset ;
 leaves:q-linden a doc:question ;
     rdfs:label "Identify this tree or leaf." ;
     form:has-question-origin leaves:q-linden-qo ;
-    form-lt:has-layout-class "select" ;
+    form-lt:has-layout-class "type-ahead" ;
     form:has-possible-value leaves:tree-linden ,
         leaves:tree-mulberry ,
         leaves:tree-aspen ,
@@ -100,7 +100,7 @@ leaves:asset-linden a form-media:asset ;
 leaves:q-fern a doc:question ;
     rdfs:label "Identify this tree or leaf." ;
     form:has-question-origin leaves:q-fern-qo ;
-    form-lt:has-layout-class "select" ;
+    form-lt:has-layout-class "typeahead" ;
     form:has-possible-value leaves:leaf-fern-pinnate ,
         leaves:leaf-fern-palmate ,
         leaves:plant-horsetail ,
