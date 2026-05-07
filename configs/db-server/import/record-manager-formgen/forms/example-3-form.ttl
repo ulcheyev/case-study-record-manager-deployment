@@ -50,8 +50,8 @@ leaves:annotation-maple-1 a form-media:annotation ;
     form-media-ann:has-stroke-width 0.00425531914893617 ;
     form-media-ann:has-fill-color "rgba(0,255,0,0.2)" ;
     form-media-ann:has-opacity 1 ;
-    form-media-ann:has-start-time 3.346591731800877 ;
-    form-media-ann:has-end-time 6.996673400064088 .
+    form-media-ann:has-start-time 3.35 ;
+    form-media-ann:has-end-time 6.97 .
 
 leaves:annotation-maple-2 a form-media:annotation ;
     form-media-ann:has-annotation-type "text" ;
@@ -61,8 +61,8 @@ leaves:annotation-maple-2 a form-media:annotation ;
     form-media-ann:has-text "Maple leaves have 3–5 pointed lobes \nradiating from a single point at the base \nof the leaf. The pointed tips of the lobes are \nthe defining feature." ;
     form-media-ann:has-font-size 0.03694267515923567 ;
     form-media-ann:has-font-weight 600 ;
-    form-media-ann:has-start-time 3.855754 ;
-    form-media-ann:has-end-time 8.855754000000001 .
+    form-media-ann:has-start-time  3.35 ;
+    form-media-ann:has-end-time 6.97 .
 
 # === Question 2 — Oak ===
 
