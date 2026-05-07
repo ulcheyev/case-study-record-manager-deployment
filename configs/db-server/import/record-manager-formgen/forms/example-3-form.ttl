@@ -194,13 +194,6 @@ leaves:annotation-linden-2 a form-media:annotation ;
     form-media-ann:has-start-time 0 ;
     form-media-ann:has-end-time 0 .
 
-# === Question 5 — Image quality feedback ===
-
-leaves:q-image-quality-feedback a doc:question ;
-    rdfs:label "Was the image quality good? If not, describe what was bad." ;
-    form-lt:has-layout-class "text" ;
-    form:has-question-origin leaves:q-image-quality-feedback-qo .
-
 
 # === Answer values (labels) ===
 
