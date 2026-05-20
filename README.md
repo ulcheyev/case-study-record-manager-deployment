@@ -184,8 +184,3 @@ In order to resolve newly assigned IP addresses after restart, gateway need to b
 
 ## 3. User Guides
 - 🔗 [Annotator User Docs](./docs/ANNOTATOR.md) — uploading assets, creating playlists, and accessing the Annotator.
-
-
-
-
-

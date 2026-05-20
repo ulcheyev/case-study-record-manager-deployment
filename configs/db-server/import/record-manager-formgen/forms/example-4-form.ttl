@@ -1,0 +1,160 @@
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix doc: <http://onto.fel.cvut.cz/ontologies/documentation/> .
+@prefix leaves: <https://example.org/sfc-leaves-testing/> .
+@prefix form: <http://onto.fel.cvut.cz/ontologies/form/> .
+@prefix form-lt: <http://onto.fel.cvut.cz/ontologies/form-layout/> .
+@prefix form-t: <http://onto.fel.cvut.cz/ontologies/form-template/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix form-media-ann: <http://onto.fel.cvut.cz/ontologies/form/media/annotation/> .
+@prefix form-media: <http://onto.fel.cvut.cz/ontologies/form/media/> .
+
+leaves:form-root a doc:question ;
+    a form:form-template ;
+    dcterms:hasVersion <https://example.org/sfc-leaves-testing/form-root/0.0.1> ;
+    rdfs:label "Tree Identification by Leaf Shape - Testing" ;
+    rdfs:comment "Testing form: identify 5 tree/leaf specimens from images, no annotations or hints." ;
+    doc:has_related_question leaves:q-maple ,
+        leaves:q-oak ,
+        leaves:q-birch ,
+        leaves:q-linden ,
+        leaves:q-fern ,
+        leaves:q-image-quality-feedback ;
+    form-lt:has-layout-class "form" ;
+    form:has-question-origin leaves:form-root-qo .
+
+
+# === Question 1 — Maple ===
+
+leaves:q-maple a doc:question ;
+    rdfs:label "Identify this tree or leaf." ;
+    form:has-question-origin leaves:q-maple-qo ;
+    form-lt:has-layout-class "type-ahead" ;
+    form:has-possible-value leaves:tree-maple ,
+        leaves:tree-horse-chestnut ,
+        leaves:tree-plane ,
+        leaves:tree-sycamore ;
+    form:has-correct-answer-value leaves:tree-maple ;
+    form:has-media-content leaves:asset-maple .
+
+leaves:asset-maple a form-media:asset ;
+    form-media:has-source "https://images.unsplash.com/photo-1698117194694-14cf8060afd6?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" .
+
+
+# === Question 2 — Oak ===
+
+leaves:q-oak a doc:question ;
+    rdfs:label "Identify this tree or leaf." ;
+    form:has-question-origin leaves:q-oak-qo ;
+    form-lt:has-layout-class "type-ahead" ;
+    form:has-possible-value leaves:tree-oak ,
+        leaves:tree-hawthorn ,
+        leaves:tree-hornbeam ,
+        leaves:tree-elm ;
+    form:has-correct-answer-value leaves:tree-oak ;
+    form:has-media-content leaves:asset-oak .
+
+leaves:asset-oak a form-media:asset ;
+    form-media:has-source "https://images.unsplash.com/photo-1688845608566-2979fbf2e705?fm=jpg" .
+
+
+# === Question 3 — Birch ===
+
+leaves:q-birch a doc:question ;
+    rdfs:label "Identify this tree or leaf." ;
+    form:has-question-origin leaves:q-birch-qo ;
+    form-lt:has-layout-class "select" ;
+    form:has-possible-value leaves:tree-birch ,
+        leaves:tree-alder ,
+        leaves:tree-hazel ,
+        leaves:tree-poplar ;
+    form:has-correct-answer-value leaves:tree-birch ;
+    form:has-media-content leaves:asset-birch .
+
+leaves:asset-birch a form-media:asset ;
+    form-media:has-source "https://images.pexels.com/photos/21958328/pexels-photo-21958328/free-photo-of-close-up-of-evergreen-leaves-on-a-branch.jpeg" .
+
+
+# === Question 4 — Linden ===
+
+leaves:q-linden a doc:question ;
+    rdfs:label "Identify this tree or leaf." ;
+    form:has-question-origin leaves:q-linden-qo ;
+    form-lt:has-layout-class "type-ahead" ;
+    form:has-possible-value leaves:tree-linden ,
+        leaves:tree-mulberry ,
+        leaves:tree-aspen ,
+        leaves:tree-willow ;
+    form:has-correct-answer-value leaves:tree-linden ;
+    form:has-media-content leaves:asset-linden .
+
+leaves:asset-linden a form-media:asset ;
+    form-media:has-source "https://cdn.pixabay.com/photo/2012/09/03/19/32/pods-55862_1280.jpg" .
+
+
+# === Question 5 — Pinnate fern leaf ===
+
+leaves:q-fern a doc:question ;
+    rdfs:label "Identify this tree or leaf." ;
+    form:has-question-origin leaves:q-fern-qo ;
+    form-lt:has-layout-class "type-ahead" ;
+    form:has-possible-value leaves:leaf-fern-pinnate ,
+        leaves:leaf-fern-palmate ,
+        leaves:plant-horsetail ,
+        leaves:plant-moss ;
+    form:has-correct-answer-value leaves:leaf-fern-pinnate ;
+    form:has-media-content leaves:asset-fern .
+
+leaves:asset-fern a form-media:asset ;
+    form-media:has-source "https://images.freeimages.com/images/large-previews/851/ferns-5-1227198.jpg?w=500" .
+
+
+# === Question 6 — Image quality feedback ===
+
+leaves:q-image-quality-feedback a doc:question ;
+    rdfs:label "Was the image quality good? If not, describe what was bad." ;
+    form-lt:has-layout-class "text" ;
+    form:has-question-origin leaves:q-image-quality-feedback-qo .
+
+
+# === Order of questions ===
+leaves:q-maple form:has-preceding-question leaves:q-oak .
+leaves:q-birch form:has-preceding-question leaves:q-maple .
+leaves:q-linden form:has-preceding-question leaves:q-birch .
+leaves:q-fern form:has-preceding-question leaves:q-linden .
+leaves:q-image-quality-feedback form:has-preceding-question leaves:q-fern .
+
+# === Answer values (labels) ===
+
+# Question 1 options
+leaves:tree-maple rdfs:label "Maple" ; rdfs:comment "Maple" .
+leaves:tree-horse-chestnut rdfs:label "Horse chestnut" ; rdfs:comment "Horse chestnut" .
+leaves:tree-plane rdfs:label "Plane tree" ; rdfs:comment "Plane tree" .
+leaves:tree-sycamore rdfs:label "Sycamore" ; rdfs:comment "Sycamore" .
+
+# Question 2 options
+leaves:tree-oak rdfs:label "Oak" ; rdfs:comment "Oak" .
+leaves:tree-hawthorn rdfs:label "Hawthorn" ; rdfs:comment "Hawthorn" .
+leaves:tree-hornbeam rdfs:label "Hornbeam" ; rdfs:comment "Hornbeam" .
+leaves:tree-elm rdfs:label "Elm" ; rdfs:comment "Elm" .
+
+# Question 3 options
+leaves:tree-birch rdfs:label "Birch" ; rdfs:comment "Birch" .
+leaves:tree-alder rdfs:label "Alder" ; rdfs:comment "Alder" .
+leaves:tree-hazel rdfs:label "Hazel" ; rdfs:comment "Hazel" .
+leaves:tree-poplar rdfs:label "Poplar" ; rdfs:comment "Poplar" .
+
+# Question 4 options
+leaves:tree-linden rdfs:label "Linden" ; rdfs:comment "Linden" .
+leaves:tree-mulberry rdfs:label "Mulberry" ; rdfs:comment "Mulberry" .
+leaves:tree-aspen rdfs:label "Aspen" ; rdfs:comment "Aspen" .
+leaves:tree-willow rdfs:label "Willow" ; rdfs:comment "Willow" .
+
+# Question 5 options
+leaves:leaf-fern-pinnate rdfs:label "Pinnate fern" ; rdfs:comment "Pinnate fern" .
+leaves:leaf-fern-palmate rdfs:label "Palmate fern" ; rdfs:comment "Palmate fern" .
+leaves:plant-horsetail rdfs:label "Horsetail" ; rdfs:comment "Horsetail" .
+leaves:plant-moss rdfs:label "Moss" ; rdfs:comment "Moss" .
