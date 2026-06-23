@@ -127,6 +127,7 @@ server {
 
     location / {
         root      /usr/share/nginx/html;
+        ssi on;
         index     index.html;
         try_files $uri $uri/ /index.html;
     }
